@@ -7,13 +7,15 @@ on:
         required: false
         type: boolean
         default: false
+      version:
+        type: string
+        default: "v7.2.1"
+        required: false
+
     secrets:
       onepass_token:
         description: "A access-token for 1password authorsation"
         required: true
-
-env: 
-  SUPER_LINTER_VERSION: v7.2.1
 
 jobs:
   superLint:
@@ -58,7 +60,7 @@ jobs:
           GITHUB_TOKEN: "op://DevOps/Git PAT - StoneHome - Action/credential"
     
       - name: Regular linter
-        uses: super-linter/super-linter/slim@${{ SUPER_LINTER_VERSION }}
+        uses: super-linter/super-linter/slim@${{ inputs.version }}
         env:
           # To report GitHub Actions status checks
           GITHUB_TOKEN: ${{ steps.load-docker-credentials.outputs.GITHUB_TOKEN }}
@@ -73,7 +75,7 @@ jobs:
 
       - name: Python Linter
         if: ${{ inputs.python }}
-        uses: super-linter/super-linter/slim@${{ SUPER_LINTER_VERSION }}
+        uses: super-linter/super-linter/slim@${{ inputs.version }}
         env:
           GITHUB_TOKEN: ${{ steps.load-docker-credentials.outputs.GITHUB_TOKEN }}
           VALIDATE_PYTHON_BLACK: true
