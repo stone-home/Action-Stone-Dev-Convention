@@ -60,7 +60,7 @@ jobs:
           GITHUB_TOKEN: "op://DevOps/Git PAT - StoneHome - Action/credential"
     
       - name: Regular linter
-        uses: super-linter/super-linter/slim@${{ inputs.version }}
+        uses: super-linter/super-linter/slim@v7.2.1
         env:
           # To report GitHub Actions status checks
           GITHUB_TOKEN: ${{ steps.load-docker-credentials.outputs.GITHUB_TOKEN }}
@@ -75,7 +75,7 @@ jobs:
 
       - name: Python Linter
         if: ${{ inputs.python }}
-        uses: super-linter/super-linter/slim@${{ inputs.version }}
+        uses: super-linter/super-linter/slim@v7.2.1
         env:
           GITHUB_TOKEN: ${{ steps.load-docker-credentials.outputs.GITHUB_TOKEN }}
           VALIDATE_PYTHON_BLACK: true
