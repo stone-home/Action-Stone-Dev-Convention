@@ -33,7 +33,7 @@ jobs:
           # for next steps.
           # Keep in mind that every single step in the job is now
           # able to access the token.
-          service-account-token: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+          service-account-token: ${{ secrets.onepass_token }}
 
       - name: Load GitHub credentials
         id: load-credentials
