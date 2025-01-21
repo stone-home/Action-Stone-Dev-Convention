@@ -3,15 +3,17 @@ name: Super Linter
 on:
   workflow_call:
     inputs:
-        python:
-            required: false
-            type: boolean
-            default: false
+      python:
+        required: false
+        type: boolean
+        default: false
     secrets:
-        onepass_token:
-            description: "A access-token for 1password authorsation"
-            required: true
+      onepass_token:
+        description: "A access-token for 1password authorsation"
+        required: true
 
+env: 
+  SUPER_LINTER_VERSION: v7.2.1
 
 jobs:
   superLint:
@@ -22,8 +24,6 @@ jobs:
       packages: read
       # To report GitHub Actions status checks
       statuses: write
-    env: 
-      SUPER_LINTER_VERSION: v7.2.1
 
     steps:
       - name: Checkout code
@@ -58,7 +58,7 @@ jobs:
           GITHUB_TOKEN: "op://DevOps/Git PAT - StoneHome - Action/credential"
     
       - name: Regular linter
-        uses: super-linter/super-linter/slim@${{ env.SUPER_LINTER_VERSION }}
+        uses: super-linter/super-linter/slim@${{ SUPER_LINTER_VERSION }}
         env:
           # To report GitHub Actions status checks
           GITHUB_TOKEN: ${{ steps.load-docker-credentials.outputs.GITHUB_TOKEN }}
@@ -73,7 +73,7 @@ jobs:
 
       - name: Python Linter
         if: ${{ inputs.python }}
-        uses: super-linter/super-linter/slim@${{ env.SUPER_LINTER_VERSION }}
+        uses: super-linter/super-linter/slim@${{ SUPER_LINTER_VERSION }}
         env:
           GITHUB_TOKEN: ${{ steps.load-docker-credentials.outputs.GITHUB_TOKEN }}
           VALIDATE_PYTHON_BLACK: true
