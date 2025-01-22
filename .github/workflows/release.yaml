@@ -44,5 +44,7 @@ jobs:
           GITHUB_TOKEN: "op://DevOps/Git PAT - StoneHome - Action/credential"
 
       - run: npx semantic-release@21.0.2
+        name: create a new release page and tag
         env:
           GITHUB_TOKEN: ${{ steps.load-credentials.outputs.GITHUB_TOKEN }}
+      
