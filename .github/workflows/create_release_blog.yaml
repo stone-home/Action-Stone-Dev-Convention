@@ -16,6 +16,9 @@ on:
         required: true
         type: string
         default: "3.11"
+      project-name:
+        required: true
+        type: string
     secrets:
       onepass_token:
         description: "A access-token for 1password authorsation"
@@ -69,15 +72,15 @@ jobs:
           export PYTHONPATH="${PYTHONPATH}:${{ github.workspace }}"
           python -m pip install --upgrade pip
           pip install ures
-          python .github/scripts/release_blog.py -p "URes" -v "${{ env.RELEASE_SUBJECT }}" -n "${{ env.RELEASE_BODY }}" -u "${{ env.RELEASE_URL }}" -o "hugo_blog"
+          python .github/scripts/release_blog.py -p "${{ inputs.project-name }}" -v "${{ env.RELEASE_SUBJECT }}" -n "${{ env.RELEASE_BODY }}" -u "${{ env.RELEASE_URL }}" -o "hugo_blog"
 
       - name: Commit changes
         run: |
           cd hugo_blog
           git config --global user.email "github@stone-bo.com"
-          git config --global user.name "Post Release Bot"
+          git config --global user.name "Blog Creation Bot"
           git add ./content/posts/project
-          git commit -m "docs(project): add new blog for ${{ env.RELEASE_SUBJECT }} of ures"
+          git commit -m "docs(project): add new blog for ${{ env.RELEASE_SUBJECT }} of ${{ inputs.project-name }}"
           git push
         env:
           GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
