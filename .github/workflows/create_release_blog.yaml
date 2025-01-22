@@ -16,10 +16,6 @@ on:
         required: true
         type: string
         default: "3.11"
-      poetry-version:
-        required: true
-        type: string
-        default: "1.8.5"
     secrets:
       onepass_token:
         description: "A access-token for 1password authorsation"
@@ -67,22 +63,13 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: ${{ inputs.python-version }}
-
-      - name: Install poetry
-        uses: abatilo/actions-poetry@v2
-        with:
-          poetry-version: ${{ inputs.poetry-version}}
-
-      - name: Setup a local virtual environment (if no poetry.toml file)
-        run: |
-          poetry config virtualenvs.create true --local
-          poetry config virtualenvs.in-project true --local
+          cache: "pip"
 
       - name: Install dependency and generate new file
         run: |
           export PYTHONPATH="${PYTHONPATH}:${{ github.workspace }}"
           python -m pip install --upgrade pip
-          poetry install
+          pip install ures
           poetry run python .github/scripts/release_blog.py -p "URes" -v "${{ env.RELEASE_SUBJECT }}" -n "${{ env.RELEASE_BODY }}" -u "${{ env.RELEASE_URL }}" -o "hugo_blog"
 
       - name: Commit changes
