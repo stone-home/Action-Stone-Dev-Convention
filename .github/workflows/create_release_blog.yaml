@@ -22,9 +22,7 @@ on:
         required: true
 
 jobs:
-  post-release:
-    runs-on: ubuntu-latest
-
+  blog-creating:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
