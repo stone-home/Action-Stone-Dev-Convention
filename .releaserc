@@ -1,0 +1,7 @@
+branches:
+  - trunk
+repositoryUrl: "https://github.com/stone-home/Action-Stone-DevOps"
+plugins:
+  - "@semantic-release/commit-analyzer"
+  - "@semantic-release/release-notes-generator"
+  - "@semantic-release/github"
