@@ -69,7 +69,7 @@ jobs:
           export PYTHONPATH="${PYTHONPATH}:${{ github.workspace }}"
           python -m pip install --upgrade pip
           pip install ures
-          poetry run python .github/scripts/release_blog.py -p "URes" -v "${{ env.RELEASE_SUBJECT }}" -n "${{ env.RELEASE_BODY }}" -u "${{ env.RELEASE_URL }}" -o "hugo_blog"
+          python .github/scripts/release_blog.py -p "URes" -v "${{ env.RELEASE_SUBJECT }}" -n "${{ env.RELEASE_BODY }}" -u "${{ env.RELEASE_URL }}" -o "hugo_blog"
 
       - name: Commit changes
         run: |
