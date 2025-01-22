@@ -1,4 +1,4 @@
-name: PyPi Publish
+name: Workflow-PyPi Publish
 
 on:
   workflow_call:

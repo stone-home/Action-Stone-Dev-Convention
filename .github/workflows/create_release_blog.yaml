@@ -1,4 +1,4 @@
-name: Release Blog
+name: Workflow-Release Blog
 
 on:
   workflow_call:

@@ -1,4 +1,4 @@
-name: Super Linter
+name: Workflow-Super Linter
 
 on:
   workflow_call:
