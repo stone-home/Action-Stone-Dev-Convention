@@ -61,6 +61,14 @@ jobs:
           path: hugo_blog
           ref: trunk
 
+      - name: Checkout DevOps repository
+        uses: actions/checkout@v4
+        with:
+          repository: stone-home/Action-Stone-DevOps
+          token: ${{ env.GITHUB_TOKEN }}
+          path: devops_repo
+          ref: trunk
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
@@ -71,7 +79,7 @@ jobs:
           export PYTHONPATH="${PYTHONPATH}:${{ github.workspace }}"
           python -m pip install --upgrade pip
           pip install ures
-          python .github/scripts/release_blog.py -p "${{ inputs.project-name }}" -v "${{ env.RELEASE_SUBJECT }}" -n "${{ env.RELEASE_BODY }}" -u "${{ env.RELEASE_URL }}" -o "hugo_blog"
+          python devops_repo/scripts/release_blog.py -p "${{ inputs.project-name }}" -v "${{ env.RELEASE_SUBJECT }}" -n "${{ env.RELEASE_BODY }}" -u "${{ env.RELEASE_URL }}" -o "hugo_blog"
 
       - name: Commit changes
         run: |
