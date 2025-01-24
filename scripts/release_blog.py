@@ -17,6 +17,7 @@ class ReleasePostMetadata:
         post_tags: List[str] = None,
         post_categories: List[str] = None,
         sidebar_weight: int = 10,
+        hero_image: str = None,
     ):
         """Initialize release post metadata.
 
@@ -36,6 +37,7 @@ class ReleasePostMetadata:
         self.post_tags = post_tags or ["project", "release"]
         self.post_categories = post_categories or ["repository"]
         self.sidebar_weight = sidebar_weight
+        self.hero_image = hero_image
 
     def create_sidebar_config(self) -> Dict:
         """Generate sidebar navigation configuration for the release post."""
@@ -52,7 +54,7 @@ class ReleasePostMetadata:
 
     def to_dict(self) -> Dict:
         """Convert metadata to dictionary format for document creation."""
-        return {
+        _data = {
             "date": time_now(iso8601=False, format="%Y-%m-%dT%H:%M:%SZ"),
             "draft": self.is_draft,
             "title": f"{self.project_name} {self.release_version}",
@@ -62,6 +64,9 @@ class ReleasePostMetadata:
             "categories": self.post_categories,
             "link": self.release_url,
         }
+        if self.hero_image is not None:
+            _data["hero"] = self.hero_image
+        return _data
 
 
 class ReleasePost(MarkdownDocument):
@@ -189,37 +194,35 @@ def parse_args() -> argparse.Namespace:
     )
 
     parser.add_argument("--project", "-p", required=True, help="Name of the project")
-
     parser.add_argument("--version", "-v", required=True, help="Release version")
-
     parser.add_argument("--url", "-u", required=True, help="URL to the release")
-
     parser.add_argument(
         "--notes",
         "-n",
         required=True,
         help="Note Content",
     )
-
     parser.add_argument(
         "--output-dir", "-o", required=True, help="Base directory for output files"
     )
-
     parser.add_argument(
         "--draft",
         "-d",
         action="store_true",
         help="Mark post as draft",
     )
-
     parser.add_argument("--tags", "-t", nargs="+", help="Additional tags for the post")
-
     parser.add_argument(
         "--categories", "-c", nargs="+", help="Additional categories for the post"
     )
-
     parser.add_argument(
         "--weight", "-w", type=int, default=10, help="Sidebar weight (default: 10)"
+    )
+    parser.add_argument(
+        "--hero",
+        type=str,
+        default=None,
+        help="Path to the hero image for the post",
     )
 
     return parser.parse_args()
@@ -241,6 +244,7 @@ def main() -> None:
         post_tags=args.tags,
         post_categories=args.categories,
         sidebar_weight=args.weight,
+        hero_image=args.hero,
     )
 
     # Create and save the release post
