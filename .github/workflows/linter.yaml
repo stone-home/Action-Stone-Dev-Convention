@@ -7,6 +7,10 @@ on:
         required: false
         type: boolean
         default: false
+      exclude:
+        required: false
+        type: string
+        default: "^test/"
     secrets:
       onepass_token:
         description: "A access-token for 1password authorsation"
@@ -67,6 +71,7 @@ jobs:
           VALIDATE_DOCKERFILE_HADOLINT: true
           VALIDATE_GIT_COMMITLINT: true
           VALIDATE_GIT_MERGE_CONFLICT_MARKERS: true
+          FILTER_REGEX_EXCLUDE: ${{ inputs.exclude }}
 
       - name: Python Linter
         if: ${{ inputs.python }}
@@ -75,3 +80,4 @@ jobs:
           GITHUB_TOKEN: ${{ steps.load-docker-credentials.outputs.GITHUB_TOKEN }}
           VALIDATE_PYTHON_BLACK: true
           VALIDATE_JUPYTER_NBQA_BLACK: true
+          FILTER_REGEX_EXCLUDE: ${{ inputs.exclude }}
