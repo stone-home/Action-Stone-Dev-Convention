@@ -3,11 +3,11 @@ name: Workflow-Super Linter
 on:
   workflow_call:
     inputs:
-      hugo_page:
+      hugo-page:
         required: false
         type: boolean
         default: false
-      mkdocs_page:
+      mkdocs-page:
         required: false
         type: boolean
         default: false
@@ -46,7 +46,7 @@ jobs:
 
   hugo:
     name: Hugo Build & Deploy
-    if: ${{ inputs.hugo_page }}
+    if: ${{ inputs.hugo-page }}
     runs-on: ubuntu-latest
     needs: setup
     steps:
@@ -77,7 +77,7 @@ jobs:
 
   mkdocs:
     name: Mkdocs Build & Deploy
-    if: ${{ inputs.mkdocs_page }}
+    if: ${{ inputs.mkdocs-page }}
     runs-on: ubuntu-latest
     needs: setup
     steps:
