@@ -12,11 +12,11 @@ on:
         type: boolean
         default: false
       python-version:
-        required: true
+        required: false
         type: string
         default: "3.11"
       poetry-version:
-        required: true
+        required: false
         type: string
         default: "1.8.5"
     secrets:
