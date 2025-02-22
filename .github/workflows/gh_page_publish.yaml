@@ -34,13 +34,6 @@ jobs:
         uses: 1password/load-secrets-action/configure@v2
         with:
           service-account-token: ${{ secrets.onepass_token }}
-      - name: Load Docker credentials
-        id: load-git-credentials
-        uses: 1password/load-secrets-action@v2
-        with:
-          export-env: true
-        env:
-          GITHUB_TOKEN: "op://DevOps/Git PAT - Personal - GitHub Action/credential"
 
   hugo:
     name: Hugo Build & Deploy
@@ -66,6 +59,13 @@ jobs:
           npm install
       - name: Build Hugo Site
         run: hugo --minify
+      - name: Load Docker credentials
+        id: load-git-credentials
+        uses: 1password/load-secrets-action@v2
+        with:
+          export-env: true
+        env:
+          GITHUB_TOKEN: "op://DevOps/Git PAT - Personal - GitHub Action/credential"
       - name: Deploy Hugo Site
         uses: peaceiris/actions-gh-pages@v4
         with:
@@ -96,6 +96,13 @@ jobs:
         run: poetry install --with test
       - name: Build Mkdocs Site
         run: mkdocs build
+      - name: Load Docker credentials
+        id: load-git-credentials
+        uses: 1password/load-secrets-action@v2
+        with:
+          export-env: true
+        env:
+          GITHUB_TOKEN: "op://DevOps/Git PAT - Personal - GitHub Action/credential"
       - name: Deploy Mkdocs Site
         uses: peaceiris/actions-gh-pages@v4
         with:
