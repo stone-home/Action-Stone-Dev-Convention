@@ -28,19 +28,17 @@ jobs:
   setup:
     name: Setup and Checkout
     runs-on: ubuntu-latest
-    outputs:
-      git_token: ${{ steps.load-git-credentials.outputs.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v4
       - name: Configure 1Password Service Account
         uses: 1password/load-secrets-action/configure@v2
         with:
-          service-account-token: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+          service-account-token: ${{ secrets.onepass_token }}
       - name: Load Docker credentials
         id: load-git-credentials
         uses: 1password/load-secrets-action@v2
         with:
-          export-env: false
+          export-env: true
         env:
           GITHUB_TOKEN: "op://DevOps/Git PAT - Personal - GitHub Action/credential"
 
@@ -71,7 +69,7 @@ jobs:
       - name: Deploy Hugo Site
         uses: peaceiris/actions-gh-pages@v4
         with:
-          github_token: ${{ needs.setup.outputs.git_token }}
+          github_token: ${{ env.GITHUB_TOKEN }}
           publish_branch: gh-pages
           publish_dir: ./public
 
@@ -101,6 +99,6 @@ jobs:
       - name: Deploy Mkdocs Site
         uses: peaceiris/actions-gh-pages@v4
         with:
-          github_token: ${{ needs.setup.outputs.git_token }}
+          github_token: ${{ env.GITHUB_TOKEN }}
           publish_branch: gh-pages
           publish_dir: ./site
