@@ -104,5 +104,3 @@ jobs:
           github_token: ${{ needs.setup.outputs.git_token }}
           publish_branch: gh-pages
           publish_dir: ./site
-
-
