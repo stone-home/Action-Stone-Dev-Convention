@@ -19,6 +19,10 @@ on:
         required: false
         type: string
         default: "1.8.5"
+      github-token-path:
+        required: false
+        type: string
+        default: "op://DevOps/Git PAT - StoneHome - Action/credential"
     secrets:
       onepass_token:
         description: "An access-token for 1password authorization"
@@ -59,7 +63,7 @@ jobs:
         with:
           export-env: true
         env:
-          GITHUB_TOKEN: "op://DevOps/Git PAT - Personal - GitHub Action/credential"
+          GITHUB_TOKEN: ${{ inputs.github-token-path }}
       - name: Deploy Hugo Site
         uses: peaceiris/actions-gh-pages@v4
         with:
@@ -99,7 +103,7 @@ jobs:
         with:
           export-env: true
         env:
-          GITHUB_TOKEN: "op://DevOps/Git PAT - Personal - GitHub Action/credential"
+          GITHUB_TOKEN: ${{ inputs.github-token-path }}
       - name: Deploy Mkdocs Site
         uses: peaceiris/actions-gh-pages@v4
         with:
