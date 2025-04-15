@@ -11,6 +11,10 @@ on:
         required: false
         type: boolean
         default: false
+      hugo-version:
+        required: false
+        type: string
+        default: "0.144.2"
       python-version:
         required: false
         type: string
@@ -38,7 +42,7 @@ jobs:
       - name: Setup Hugo
         uses: peaceiris/actions-hugo@v3
         with:
-          hugo-version: "latest"
+          hugo-version: ${{ inputs.hugo-version }}
           extended: true
       - name: Update Hugo Modules
         run: hugo mod tidy
