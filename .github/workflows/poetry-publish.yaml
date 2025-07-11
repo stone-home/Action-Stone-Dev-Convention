@@ -18,7 +18,7 @@ on:
       onepass_token:
         required: true
         description: "A access-token for 1password authorsation"
-
+        
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -53,7 +53,7 @@ jobs:
       - name: Configure 1Password Service Account
         uses: 1password/load-secrets-action/configure@v2
         with:
-          service-account-token: ${{ secrets.ORG_OP_ACCOUNT_TOKEN }}
+          service-account-token: ${{ secrets.onepass_token }}
       - name: Load Docker credentials
         id: load-docker-credentials
         uses: 1password/load-secrets-action@v2
@@ -61,9 +61,9 @@ jobs:
           export-env: true
         env:
           GITHUB_TOKEN: "op://DevOps/Git PAT - StoneHome - Action/credential"
-          PYPI_TOKEN: "op://DevOps/PyPi Token/credential"
-
-      # 7. create a branch
+          PYPI_TOKEN: "op://DevOps/PyPi Token/credential" 
+          
+      # 7. create a branch 
       - name: Create Release Branch
         shell: bash
         run: |
@@ -88,3 +88,4 @@ jobs:
       # 10. Publish the package
       - name: Publish package to PyPI
         run: poetry publish -u __token__ -p ${{ env.PYPI_TOKEN }}
+

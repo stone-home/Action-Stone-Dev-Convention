@@ -47,7 +47,7 @@ jobs:
       - name: Configure 1Password Service Account
         uses: 1password/load-secrets-action/configure@v2
         with:
-          service-account-token: ${{ secrets.ORG_OP_ACCOUNT_TOKEN }}
+          service-account-token: ${{ secrets.onepass_token }}
 
       - name: Load Docker credentials
         id: load-credentials
