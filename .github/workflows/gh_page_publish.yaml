@@ -60,7 +60,7 @@ jobs:
       - name: Configure 1Password Service Account
         uses: 1password/load-secrets-action/configure@v2
         with:
-          service-account-token: ${{ secrets.onepass_token }}
+          service-account-token: ${{ secrets.ORG_OP_ACCOUNT_TOKEN }}
       - name: Load Docker credentials
         id: load-git-credentials
         uses: 1password/load-secrets-action@v2
