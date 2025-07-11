@@ -2,7 +2,7 @@ name: Workflow-Release
 on:
   workflow_call:
     inputs:
-      nodejs-project:
+      nodejs_project:
         required: false
         type: boolean
         default: true
@@ -49,10 +49,10 @@ jobs:
           GITHUB_TOKEN: "op://DevOps/Git PAT - StoneHome - Action/credential"
 
       - name: Node.js install dependencies
-        if: ${{ inputs.nodejs-project }}
+        if: ${{ inputs.nodejs_project }}
         run: npm ci
       - name: Node.js Build
-        if: ${{ inputs.nodejs-project }}
+        if: ${{ inputs.nodejs_project }}
         run: npm run build
 
       - run: npx semantic-release@21.0.2
