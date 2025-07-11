@@ -1,11 +1,16 @@
 name: Workflow-Release
-on: 
+on:
   workflow_call:
+    inputs:
+      nodejs-project:
+        required: false
+        type: boolean
+        default: true
     secrets:
       onepass_token:
         description: "A access-token for 1password authorsation"
         required: true
-        
+
 permissions:
   contents: read # for checkout
 jobs:
@@ -43,8 +48,14 @@ jobs:
         env:
           GITHUB_TOKEN: "op://DevOps/Git PAT - StoneHome - Action/credential"
 
+      - name: Node.js install dependencies
+        if: ${{ inputs.nodejs-project }}
+        run: npm ci
+      - name: Node.js Build
+        if: ${{ inputs.nodejs-project }}
+        run: npm run build
+
       - run: npx semantic-release@21.0.2
         name: create a new release page and tag
         env:
           GITHUB_TOKEN: ${{ steps.load-credentials.outputs.GITHUB_TOKEN }}
-      
