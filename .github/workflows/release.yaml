@@ -48,7 +48,7 @@ jobs:
         id: load-credentials
         uses: 1password/load-secrets-action@v2
         with:
-          export-env: true
+          export-env: false
         env:
           GITHUB_TOKEN: "op://DevOps/Git PAT - StoneHome - Action/credential"
 
