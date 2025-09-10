@@ -10,6 +10,10 @@ on:
         required: false
         type: boolean
         default: false
+      git_token_path:
+        required: false
+        type: string
+        default: "op://DevOps/Git PAT - StoneHome - Action/credential"
     secrets:
       onepass_token:
         description: "A access-token for 1password authorsation"
@@ -50,7 +54,7 @@ jobs:
         with:
           export-env: false
         env:
-          GITHUB_TOKEN: "op://DevOps/Git PAT - StoneHome - Action/credential"
+          GITHUB_TOKEN: ${{ inputs.git_token_path }}
 
       - name: Cache TeX Live installation
         id: cache-texlive
