@@ -60,10 +60,10 @@ jobs:
           key: ${{ runner.os }}-texlive-latest
           path: |
             /usr/local/texlive
-            /usr/bin
 
+      # Install TeX Live everytime to restore soft links' issues after loading cache
       - name: Install TeX Live
-        if: ${{ inputs.latex_project && steps.cache-texlive.outputs.cache-hit != 'true' }}
+        if: ${{ inputs.latex_project}}
         run: |
           sudo apt-get update
           sudo apt-get install -y texlive-full
