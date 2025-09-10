@@ -51,13 +51,23 @@ jobs:
           export-env: false
         env:
           GITHUB_TOKEN: "op://DevOps/Git PAT - StoneHome - Action/credential"
-      - name: Generate a YYYY-WW timestamp
-        id: timestamp
-        run: ${{ 'echo "::set-output name=yyyy-ww::$(date +%Y-%W)"' }}
-      - uses: paolobrasolin/setup-texlive-action@v1
+
+      - name: Cache TeX Live installation
+        id: cache-texlive
+        if: ${{ inputs.latex_project }}
+        uses: actions/cache@v3
         with:
-          cache-enabled: true
-          cache-key: texlive-${{ runner.os }}-${{ steps.timestamp.output.yyyy-ww }}
+          key: ${{ runner.os }}-texlive-latest
+          path: |
+            /usr/local/texlive
+
+      # Install TeX Live everytime to restore soft links' issues after loading cache
+      - name: Install TeX Live
+        if: ${{ inputs.latex_project}}
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y texlive-full
+
       - name: Node.js install dependencies
         if: ${{ inputs.nodejs_project }}
         run: npm ci
