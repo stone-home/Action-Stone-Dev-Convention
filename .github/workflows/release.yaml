@@ -55,11 +55,10 @@ jobs:
       - name: Cache TeX Live installation
         id: cache-texlive
         if: ${{ inputs.latex_project }}
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           key: ${{ runner.os }}-texlive-latest
-          path: |
-            /usr/local/texlive
+          path: /usr/local/texlive
 
       # Install TeX Live everytime to restore soft links' issues after loading cache
       - name: Install TeX Live
