@@ -51,22 +51,13 @@ jobs:
           export-env: false
         env:
           GITHUB_TOKEN: "op://DevOps/Git PAT - StoneHome - Action/credential"
-
-      - name: Cache TeX Live installation
-        id: cache-texlive
-        if: ${{ inputs.latex_project }}
-        uses: actions/cache@v3
+      - name: Generate a YYYY-WW timestamp
+        id: timestamp
+        run: ${{ 'echo "::set-output name=yyyy-ww::$(date +%Y-%W)"' }}
+      - uses: paolobrasolin/setup-texlive-action@v1
         with:
-          path: /usr/local/texlive
-          key: ${{ runner.os }}-texlive-latest
-
-      # Install TeX Live everytime to restore soft links' issues after loading cache
-      - name: Install TeX Live
-        if: ${{ inputs.latex_project}}
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y texlive-full
-
+          cache-enabled: true
+          cache-key: texlive-${{ runner.os }}-${{ steps.timestamp.output.yyyy-ww }}
       - name: Node.js install dependencies
         if: ${{ inputs.nodejs_project }}
         run: npm ci
