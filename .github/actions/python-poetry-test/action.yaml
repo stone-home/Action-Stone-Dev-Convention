@@ -1,0 +1,28 @@
+name: "Run Poetry Tests"
+description: "Installs dependencies and runs pytest"
+inputs:
+  python-version:
+    description: "Python Version"
+    required: false
+    default: "3.12"
+  poetry-version:
+    description: "Poetry Version"
+    required: false
+    default: "2.1.4"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Setup Environment
+      uses: ./.github/actions/setup-poetry
+      with:
+        python-version: ${{ inputs.python-version }}
+        poetry-version: ${{ inputs.poetry-version }}
+
+    - name: Install dependencies
+      shell: bash
+      run: poetry install --with test
+
+    - name: Run tests
+      shell: bash
+      run: poetry run pytest -v

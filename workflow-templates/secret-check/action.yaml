@@ -1,7 +1,6 @@
 name: Workflow-Trufflehog
 
-on:
-  workflow_call
+on: workflow_call
 
 jobs:
   secretCheck:

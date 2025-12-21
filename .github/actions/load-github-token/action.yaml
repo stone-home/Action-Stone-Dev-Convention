@@ -1,0 +1,26 @@
+name: "Load GitHub Token"
+description: "Fetches the GitHub PAT from 1Password"
+inputs:
+  # 1. Centralize the common path here.
+  # If you change it in 1Password, you only change it HERE.
+  secret-path:
+    description: "The 1Password path to the secret"
+    required: false
+    default: "op://DevOps/Git PAT - StoneHome - Action/credential"
+
+outputs:
+  # 2. Map the step output to the action output so workflows can use it
+  token:
+    description: "The actual token value"
+    value: ${{ steps.load-secret.outputs.GITHUB_TOKEN }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Load Secret
+      id: load-secret
+      uses: 1password/load-secrets-action@v2
+      with:
+        export-env: false # Keep false to use outputs
+      env:
+        GITHUB_TOKEN: ${{ inputs.secret-path }}
