@@ -1,0 +1,38 @@
+name: Semantic Release (Basic)
+description: "Execute a basic release process, like bash or other scripts"
+inputs:
+  onepass-token:
+    description: "OnePassword Token"
+    required: true
+  github-token-path:
+    required: false
+    type: string
+    default: "op://DevOps/Git PAT - StoneHome - Action/credential"
+
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 20
+
+    - name: Setup 1Password
+      uses: ./.github/actions/setup-1password@trunk
+      with:
+        onepass-token: ${{ secrets.onepass-token }}
+
+    - name: Get Bot Token
+      id: get-token
+      uses: ./.github/actions/load-github-token@trunk
+      with:
+        secret-path: ${{ inputs.github-token-path }}
+
+    - name: Semantic Release
+      shell: bash
+      run: npx semantic-release@21.0.2
+      env:
+        GITHUB_TOKEN: ${{ steps.get-token.outputs.token }}

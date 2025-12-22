@@ -6,12 +6,13 @@ on:
 
 jobs:
   blog-creating:
-    uses: stone-home/Action-Stone-DevOps/workflow-templates/publish-blog2hugo@feat/refactor # Action to create release blog post
-    with:
-      release-subject: ${{ github.event.release.name }} # Subject of the release
-      release-body: ${{ github.event.release.body }} # Body of the release
-      release-url: ${{ github.event.release.html_url }} # URL of the release
-      python-version: "3.12" # Python version to use
-      project-name: "DevOps Automation"
-    secrets:
-      onepass-token: ${{ secrets.OP_ACCOUNT_TOKEN }} # 1Password service account token
+    runs-on: arc-runner-large
+    steps:
+      - uses: ./.github/actions/publish-blog-hugo
+        with:
+          release-subject: ${{ github.event.release.name }} # Subject of the release
+          release-body: ${{ github.event.release.body }} # Body of the release
+          release-url: ${{ github.event.release.html_url }} # URL of the release
+          python-version: "3.12" # Python version to use
+          project-name: "DevOps Automation"
+          onepass-token: ${{ secrets.OP_ACCOUNT_TOKEN }} # 1Password service account token
