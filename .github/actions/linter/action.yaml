@@ -23,18 +23,6 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      with:
-        # super-linter needs the full git history to get the
-        # list of files that changed across commits
-        fetch-depth: 0
-    - name: Cache Super-Linter data
-      uses: actions/cache@v4
-      with:
-        path: /tmp/super-linter-cache
-        key: ${{ runner.os }}-docker-${{ github.ref_name }}
-
     - name: Configure 1Password Service Account
       uses: ./.github/actions/setup-1password
       with:

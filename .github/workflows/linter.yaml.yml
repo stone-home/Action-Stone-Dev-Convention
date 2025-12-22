@@ -16,7 +16,8 @@ jobs:
       packages: read
       statuses: write
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
       - uses: ./.github/actions/linter
         with:
-          python: true
           onepass-token: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
