@@ -5,8 +5,8 @@ inputs:
     description: "OnePassword Token"
     required: true
   github-token-path:
+    description: "GitHub PAT secret path in Onepassword"
     required: false
-    type: string
     default: "op://DevOps/Git PAT - StoneHome - Action/credential"
 
 runs:

@@ -1,0 +1,21 @@
+name: Super Linter
+
+on:
+  push:
+    branches-ignore:
+      - trunk
+  pull_request:
+
+jobs:
+  superLint:
+    name: linter
+    runs-on: arc-runner-large
+    permissions:
+      contents: read
+      packages: read
+      statuses: write
+    steps:
+      - uses: ./.github/actions/linter
+        with:
+          python: true
+          onepass-token: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
