@@ -30,7 +30,7 @@ runs:
         # for next steps.
         # Keep in mind that every single step in the job is now
         # able to access the token.
-        onepass-token: ${{ secrets.onepass-token }}
+        onepass-token: ${{ inputs.onepass-token }}
 
     - name: Load GitHub credentials
       id: get-token
