@@ -6,7 +6,7 @@ on:
 
 jobs:
   blog-creating:
-    uses: stone-home/Action-Stone-DevOps/workflow-templates/publish-blog2hugo@trunk # Action to create release blog post
+    uses: stone-home/Action-Stone-DevOps/workflow-templates/publish-blog2hugo@feat/refactor # Action to create release blog post
     with:
       release-subject: ${{ github.event.release.name }} # Subject of the release
       release-body: ${{ github.event.release.body }} # Body of the release
