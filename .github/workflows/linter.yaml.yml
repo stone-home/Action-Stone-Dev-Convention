@@ -10,6 +10,7 @@ jobs:
   superLint:
     name: linter
     runs-on: arc-runner-large
+    container: ubuntu:latest
     permissions:
       contents: read
       packages: read
