@@ -1,0 +1,116 @@
+name: Workflow-Super Linter
+
+on:
+  workflow_call:
+    inputs:
+      hugo-page:
+        required: false
+        type: boolean
+        default: false
+      mkdocs-page:
+        required: false
+        type: boolean
+        default: false
+      hugo-version:
+        required: false
+        type: string
+        default: "0.144.2"
+      python-version:
+        required: false
+        type: string
+        default: "3.11"
+      poetry-version:
+        required: false
+        type: string
+        default: "1.8.5"
+      github-token-path:
+        required: false
+        type: string
+        default: "op://DevOps/Git PAT - StoneHome - Action/credential"
+    secrets:
+      onepass_token:
+        description: "An access-token for 1password authorization"
+        required: true
+
+jobs:
+  hugo:
+    name: Hugo Build & Deploy
+    if: ${{ inputs.hugo-page }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v3
+        with:
+          hugo-version: ${{ inputs.hugo-version }}
+          extended: true
+      - name: Update Hugo Modules
+        run: hugo mod tidy
+      - name: Setup Node for Hugo
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install Node Modules for Hugo
+        run: |
+          hugo mod npm pack
+          npm install
+      - name: Build Hugo Site
+        run: hugo --minify
+
+      - name: Configure 1Password Service Account
+        uses: 1password/load-secrets-action/configure@v2
+        with:
+          service-account-token: ${{ secrets.onepass_token }}
+      - name: Load Docker credentials
+        id: load-git-credentials
+        uses: 1password/load-secrets-action@v2
+        with:
+          export-env: true
+        env:
+          GITHUB_TOKEN: ${{ inputs.github-token-path }}
+      - name: Deploy Hugo Site
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ env.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: ./public
+
+  mkdocs:
+    name: Mkdocs Build & Deploy
+    if: ${{ inputs.mkdocs-page }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Python for Mkdocs
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ inputs.python-version }}
+      - name: Install Poetry
+        uses: abatilo/actions-poetry@v2
+        with:
+          poetry-version: ${{ inputs.poetry-version }}
+      - name: Configure Poetry Virtual Environment
+        run: |
+          poetry config virtualenvs.create true --local
+          poetry config virtualenvs.in-project true --local
+      - name: Install Mkdocs Dependencies
+        run: poetry install --with test
+      - name: Build Mkdocs Site
+        run: poetry run mkdocs build
+      - name: Configure 1Password Service Account
+        uses: 1password/load-secrets-action/configure@v2
+        with:
+          service-account-token: ${{ secrets.onepass_token }}
+      - name: Load Docker credentials
+        id: load-git-credentials
+        uses: 1password/load-secrets-action@v2
+        with:
+          export-env: true
+        env:
+          GITHUB_TOKEN: ${{ inputs.github-token-path }}
+      - name: Deploy Mkdocs Site
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ env.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: ./site

@@ -1,0 +1,83 @@
+name: Workflow-Super Linter
+
+on:
+  workflow_call:
+    inputs:
+      python:
+        required: false
+        type: boolean
+        default: false
+      exclude:
+        required: false
+        type: string
+        default: "^test/"
+    secrets:
+      onepass_token:
+        description: "A access-token for 1password authorsation"
+        required: true
+
+jobs:
+  superLint:
+    name: Liters
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+      # To report GitHub Actions status checks
+      statuses: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          # super-linter needs the full git history to get the
+          # list of files that changed across commits
+          fetch-depth: 0
+      - name: Cache Super-Linter data
+        uses: actions/cache@v4
+        with:
+          path: /tmp/super-linter-cache
+          key: ${{ runner.os }}-docker-${{ github.ref_name }}
+          restore-keys: |
+            ${{ runner.os }}-docker-
+
+      - name: Configure 1Password Service Account
+        uses: 1password/load-secrets-action/configure@v2
+        with:
+          # Persist the 1Password Service Account Authorization token
+          # for next steps.
+          # Keep in mind that every single step in the job is now
+          # able to access the token.
+          service-account-token: ${{ secrets.onepass_token }}
+
+      - name: Load Docker credentials
+        id: load-docker-credentials
+        uses: 1password/load-secrets-action@v2
+        with:
+          export-env: false
+        env:
+          GITHUB_TOKEN: "op://DevOps/Git PAT - StoneHome - Action/credential"
+
+      - name: Regular linter
+        uses: super-linter/super-linter/slim@v7.2.1
+        env:
+          # To report GitHub Actions status checks
+          GITHUB_TOKEN: ${{ steps.load-docker-credentials.outputs.GITHUB_TOKEN }}
+          VALIDATE_YAML: true
+          VALIDATE_JSON: true
+          VALIDATE_JSON_PRETTIER: true
+          VALIDATE_GITLEAKS: true
+          VALIDATE_ENV: true
+          VALIDATE_DOCKERFILE_HADOLINT: true
+          VALIDATE_GIT_COMMITLINT: true
+          VALIDATE_GIT_MERGE_CONFLICT_MARKERS: true
+          FILTER_REGEX_EXCLUDE: ${{ inputs.exclude }}
+
+      - name: Python Linter
+        if: ${{ inputs.python }}
+        uses: super-linter/super-linter/slim@v7.2.1
+        env:
+          GITHUB_TOKEN: ${{ steps.load-docker-credentials.outputs.GITHUB_TOKEN }}
+          VALIDATE_PYTHON_BLACK: true
+          VALIDATE_JUPYTER_NBQA_BLACK: true
+          FILTER_REGEX_EXCLUDE: ${{ inputs.exclude }}
