@@ -1,35 +1,32 @@
-name: Workflow-PyPi Publish
+name: Workflow-PyPi Publish via Poetry
 
-on:
-  workflow_call:
-    inputs:
-      python-version:
-        required: true
-        type: string
-        default: "3.11"
-      poetry-version:
-        required: true
-        type: string
-        default: "1.8.5"
-      version-id:
-        required: true
-        type: string
-      github-token-path:
-        required: false
-        type: string
-        default: "op://DevOps/Git PAT - StoneHome - Action/credential"
-      pypi_enable:
-        required: false
-        type: boolean
-        default: false
-      pypi-token-path:
-        required: false
-        type: string
-        default: "op://DevOps/PyPi Token/credential"
-    secrets:
-      onepass-token:
-        required: true
-        description: "A access-token for 1password authorsation"
+inputs:
+  python-version:
+    description: "Python Version"
+    required: true
+    default: "3.11"
+  poetry-version:
+    description: "Poetry Version"
+    required: true
+    default: "1.8.5"
+  version-id:
+    description: "Release name or ID"
+    required: true
+  github-token-path:
+    description: "The path of GitHub token"
+    required: false
+    default: "op://DevOps/Git PAT - StoneHome - Action/credential"
+  pypi_enable:
+    description: "Enable release process"
+    required: false
+    default: "false"
+  pypi-token-path:
+    description: "The path of PyPi"
+    required: false
+    default: "op://DevOps/PyPi Token/credential"
+  onepass-token:
+    required: true
+    description: "A access-token for 1password authorization"
 
 jobs:
   publish:
@@ -86,5 +83,5 @@ jobs:
         run: poetry build
       # 10. Publish the package
       - name: Publish package to PyPI
-        if: ${{ inputs.pypi_enable }}
+        if: ${{ inputs.pypi_enable == 'true' }}
         run: poetry publish -u __token__ -p ${{ env.PYPI_TOKEN }}

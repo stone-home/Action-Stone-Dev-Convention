@@ -32,9 +32,6 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-
     - name: Fetch release information
       id: release
       shell: bash
@@ -101,4 +98,4 @@ runs:
         git commit -m "docs(project): add new blog for ${{ env.RELEASE_SUBJECT }} of ${{ inputs.project-name }}"
         git push
       env:
-        GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ steps.get-token.outputs.token }}
