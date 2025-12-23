@@ -57,7 +57,7 @@ runs:
       if: ${{ inputs.python == 'true' }}
       uses: super-linter/super-linter/slim@v7.2.1
       env:
-        GITHUB_TOKEN: ${{ steps.load-docker-credentials.outputs.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ steps.get-token.outputs.token }}
         VALIDATE_PYTHON_BLACK: true
         VALIDATE_JUPYTER_NBQA_BLACK: true
         FILTER_REGEX_EXCLUDE: ${{ inputs.exclude }}
@@ -66,6 +66,6 @@ runs:
       if: ${{ inputs.javascript == 'true' }}
       uses: super-linter/super-linter/slim@v7.2.1
       env:
-        GITHUB_TOKEN: ${{ steps.load-docker-credentials.outputs.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ steps.get-token.outputs.token }}
         VALIDATE_JAVASCRIPT_ESLINT: true
         FILTER_REGEX_EXCLUDE: ${{ inputs.exclude }}
