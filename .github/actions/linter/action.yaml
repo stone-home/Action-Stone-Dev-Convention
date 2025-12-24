@@ -20,6 +20,15 @@ inputs:
     description: "A access-token for 1password authentication"
     required: true
 
+# ===========================================================================
+# Required Permission
+#permissions:
+#  contents: read
+#  packages: read
+#  # To report GitHub Actions status checks
+#  statuses: write
+# ===========================================================================
+
 runs:
   using: "composite"
   steps:

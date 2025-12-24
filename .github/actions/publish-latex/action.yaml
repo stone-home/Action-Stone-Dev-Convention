@@ -8,6 +8,12 @@ inputs:
     description: "1password connect token"
     required: true
 
+# ===========================================================================
+# Required Permission
+#permissions:
+#  contents: read
+# ===========================================================================
+
 runs:
   using: composite
   steps:

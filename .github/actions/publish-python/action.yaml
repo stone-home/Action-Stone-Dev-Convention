@@ -28,55 +28,62 @@ inputs:
     required: true
     description: "A access-token for 1password authorization"
 
-jobs:
-  publish:
-    runs-on: ubuntu-latest
-    steps:
-      # 2. Set up Python & Poetry environment
-      - name: Setup Python and Poetry
-        uses: ./.github/actions/setup-poetry
-        with:
-          python-version: ${{ inputs.python-version }}
-          poetry-version: ${{ inputs.poetry-version }}
+# ===========================================================================
+# Required Permission
+#permissions:
+#  contents: read
+# ===========================================================================
 
-      # 3. load Secrets from 1password
-      - name: Configure 1Password Service Account
-        uses: ./.github/actions/setup-1password
-        with:
-          onepass-token: ${{ inputs.onepass-token }}
+runs:
+  using: composite
+  steps:
+    # 2. Set up Python & Poetry environment
+    - name: Setup Python and Poetry
+      uses: ./.github/actions/setup-poetry
+      with:
+        python-version: ${{ inputs.python-version }}
+        poetry-version: ${{ inputs.poetry-version }}
 
-      - name: Load credentials
-        id: load-credentials
-        uses: 1password/load-secrets-action@v2
-        with:
-          export-env: true
-        env:
-          GITHUB_TOKEN: ${{ inputs.github-token-path }}
-          PYPI_TOKEN: ${{ inputs.pypi-token-path }}
+    # 3. load Secrets from 1password
+    - name: Configure 1Password Service Account
+      uses: ./.github/actions/setup-1password
+      with:
+        onepass-token: ${{ inputs.onepass-token }}
 
-      # 7. create a branch
-      - name: Create Release Branch
-        shell: bash
-        run: |
-          BRANCH_NAME="versions/${{ inputs.version-id }}"
-          git config user.name "Publish Action"
-          git config user.email "github@stone-bo.com"
-          git checkout -b "$BRANCH_NAME"
-          git push --set-upstream origin "$BRANCH_NAME"
-          echo "Created branch: $BRANCH_NAME"
-      # 8. Update version in pyproject.toml to match the tag version
-      - name: Update version in pyproject.toml
-        shell: bash
-        run: |
-          NEW_VERSION=$(echo ${{ inputs.version-id }} | sed 's/^v//') # Remove 'v' prefix if it exists
-          poetry version "$NEW_VERSION"
-          git add pyproject.toml
-          git commit -m "chore(poetry): bumping the version to ${{ inputs.version-id }}"
-          git push
-      # 9. Build package
-      - name: Build package
-        run: poetry build
-      # 10. Publish the package
-      - name: Publish package to PyPI
-        if: ${{ inputs.pypi_enable == 'true' }}
-        run: poetry publish -u __token__ -p ${{ env.PYPI_TOKEN }}
+    - name: Load credentials
+      id: load-credentials
+      uses: 1password/load-secrets-action@v2
+      with:
+        export-env: true
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token-path }}
+        PYPI_TOKEN: ${{ inputs.pypi-token-path }}
+
+    # 7. create a branch
+    - name: Create Release Branch
+      shell: bash
+      run: |
+        BRANCH_NAME="versions/${{ inputs.version-id }}"
+        git config user.name "Publish Action"
+        git config user.email "github@stone-bo.com"
+        git checkout -b "$BRANCH_NAME"
+        git push --set-upstream origin "$BRANCH_NAME"
+        echo "Created branch: $BRANCH_NAME"
+    # 8. Update version in pyproject.toml to match the tag version
+    - name: Update version in pyproject.toml
+      shell: bash
+      run: |
+        NEW_VERSION=$(echo ${{ inputs.version-id }} | sed 's/^v//') # Remove 'v' prefix if it exists
+        poetry version "$NEW_VERSION"
+        git add pyproject.toml
+        git commit -m "chore(poetry): bumping the version to ${{ inputs.version-id }}"
+        git push
+    # 9. Build package
+    - name: Build package
+      shell: bash
+      run: poetry build
+    # 10. Publish the package
+    - name: Publish package to PyPI
+      if: ${{ inputs.pypi_enable == 'true' }}
+      shell: bash
+      run: poetry publish -u __token__ -p ${{ env.PYPI_TOKEN }}

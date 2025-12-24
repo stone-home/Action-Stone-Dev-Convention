@@ -9,6 +9,12 @@ inputs:
     required: false
     default: "op://DevOps/Git PAT - StoneHome - Action/credential"
 
+# ===========================================================================
+# Required Permission
+#permissions:
+#  contents: read
+# ===========================================================================
+
 runs:
   using: "composite"
   steps:
