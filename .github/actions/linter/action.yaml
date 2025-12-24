@@ -8,6 +8,10 @@ inputs:
     description: "To enable javascript-relevant linter, default 'false'"
     required: false
     default: "false"
+  latext:
+    description: "To enable LaTex Project linter, default 'false'"
+    required: false
+    default: "false"
   exclude:
     description: "A Regex expression of exclusion files"
     required: false
@@ -77,4 +81,12 @@ runs:
       env:
         GITHUB_TOKEN: ${{ steps.get-token.outputs.token }}
         VALIDATE_JAVASCRIPT_ESLINT: true
+        FILTER_REGEX_EXCLUDE: ${{ inputs.exclude }}
+
+    - name: LaTex Linting
+      if: ${{ inputs.latext == 'true' }}
+      uses: super-linter/super-linter/slim@v7.2.1
+      env:
+        GITHUB_TOKEN: ${{ steps.get-token.outputs.token }}
+        VALIDATE_LATEX: true
         FILTER_REGEX_EXCLUDE: ${{ inputs.exclude }}
