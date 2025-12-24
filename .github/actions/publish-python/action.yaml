@@ -16,7 +16,7 @@ inputs:
     description: "The path of GitHub token"
     required: false
     default: "op://DevOps/Git PAT - StoneHome - Action/credential"
-  pypi_enable:
+  pypi-enable:
     description: "Enable release process"
     required: false
     default: "false"
@@ -34,14 +34,14 @@ jobs:
     steps:
       # 2. Set up Python & Poetry environment
       - name: Setup Python and Poetry
-        uses: stone-home/Action-Stone-DevOps/.github/actions/setup-poetry
+        uses: ./.github/actions/setup-poetry
         with:
           python-version: ${{ inputs.python-version }}
           poetry-version: ${{ inputs.poetry-version }}
 
       # 3. load Secrets from 1password
       - name: Configure 1Password Service Account
-        uses: stone-home/Action-Stone-DevOps/.github/actions/setup-1password
+        uses: ./.github/actions/setup-1password
         with:
           onepass-token: ${{ inputs.onepass-token }}
 

@@ -12,7 +12,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: ./.github/actions/publish-blog-hugo
+      - uses: ./.github/actions/create-blog-in-hugo
         with:
           release-subject: ${{ github.event.release.name }} # Subject of the release
           release-body: ${{ github.event.release.body }} # Body of the release

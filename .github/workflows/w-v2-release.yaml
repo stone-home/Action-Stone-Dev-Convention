@@ -1,0 +1,104 @@
+name: Workflow-Release
+on:
+  workflow_call:
+    inputs:
+      python-project:
+        required: false
+        type: boolean
+        default: false
+      nodejs-project:
+        required: false
+        type: boolean
+        default: false
+      latex-project:
+        required: false
+        type: boolean
+        default: false
+      git-token-path:
+        required: false
+        type: string
+        default: "op://DevOps/Git PAT - StoneHome - Action/credential"
+      python-version:
+        required: true
+        type: string
+        default: "3.11"
+      poetry-version:
+        required: true
+        type: string
+        default: "1.8.5"
+      version-id:
+        required: true
+        type: string
+      pypi-enable:
+        description: "Feature only work when python-project is true"
+        required: false
+        type: boolean
+        default: false
+      pypi-token-path:
+        description: "Feature only work when python-project is true"
+        required: false
+        type: string
+        default: "op://DevOps/PyPi Token/credential"
+    secrets:
+      onepass-token:
+        description: "A access-token for 1password authorsation"
+        required: true
+
+permissions:
+  contents: write # to be able to publish a GitHub release
+  issues: write # to be able to comment on released issues
+  pull-requests: write # to be able to comment on released pull requests
+jobs:
+  python:
+    name: Publish Python Project to PyPi
+    if: inputs.python-project
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: ./.github/actions/publish-python
+        with:
+          onepass-token: ${{ secrets.onepass-token }}
+          python-version: ${{ inputs.python-version }}
+          poetry-version: ${{ inputs.poetry-version }}
+          version-id: ${{ inputs.version-id }}
+          github-token-path: ${{ inputs.git-token-path }}
+          pypi-enable: ${{ inputs.pypi-enable }}
+          pypi-token-path: ${{ inputs.pypi-token-path }}
+  js:
+    name: Release Project to GitHub Rlease in NPM environment
+    if: inputs.nodejs-project
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: ./.github/actions/publish-npm
+        with:
+          github-token-path: ${{ inputs.git-token-path }}
+          onepass-token: ${{ secrets.onepass-token }}
+  latex:
+    name: Release Project to GitHub Rlease for LaTex Documents
+    if: inputs.latex-project
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: ./.github/actions/publish-latex
+        with:
+          github-token-path: ${{ inputs.git-token-path }}
+          onepass-token: ${{ secrets.onepass-token }}
+  other:
+    name: Basic Release Process
+    if: inputs.python-project == false && inputs.nodejs-project == false && inputs.latex-project == false
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: ./.github/actions/publish-basic
+        with:
+          github-token-path: ${{ inputs.git-token-path }}
+          onepass-token: ${{ secrets.onepass-token }}
