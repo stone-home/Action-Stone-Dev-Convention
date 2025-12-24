@@ -80,7 +80,8 @@ runs:
       uses: super-linter/super-linter/slim@v7.2.1
       env:
         GITHUB_TOKEN: ${{ steps.get-token.outputs.token }}
-        VALIDATE_JAVASCRIPT_ESLINT: true
+        VALIDATE_JAVASCRIPT_ES: true
+        VALIDATE_JAVASCRIPT_PRETTIER: true
         FILTER_REGEX_EXCLUDE: ${{ inputs.exclude }}
 
     - name: LaTex Linting
