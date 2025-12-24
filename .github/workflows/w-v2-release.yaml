@@ -22,14 +22,17 @@ on:
         required: false
         type: string
         default: "20"
+        description: "The version of NodeJS"
       python-version:
         required: false
         type: string
         default: "3.11"
+        description: "THe version of Python"
       poetry-version:
         required: false
         type: string
         default: "1.8.5"
+        description: "The version of Poetry"
       version-id:
         required: true
         type: string
@@ -93,6 +96,7 @@ jobs:
           fetch-depth: 0
       - uses: stone-home/Action-Stone-DevOps/.github/actions/publish-latex@trunk
         with:
+          node-version: ${{ inputs.nodejs-version }}
           github-token-path: ${{ inputs.git-token-path }}
           onepass-token: ${{ secrets.onepass-token }}
   other:
