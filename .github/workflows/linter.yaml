@@ -57,7 +57,7 @@ jobs:
           export-env: false
         env:
           GITHUB_TOKEN: "op://DevOps/Git PAT - StoneHome - Action/credential"
-    
+
       - name: Regular linter
         uses: super-linter/super-linter/slim@v7.2.1
         env:

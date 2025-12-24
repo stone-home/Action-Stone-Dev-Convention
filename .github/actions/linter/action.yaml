@@ -1,0 +1,71 @@
+name: Super Linter
+inputs:
+  python:
+    description: "To enable python-relevant linter, default 'false'"
+    required: false
+    default: "false"
+  javascript:
+    description: "To enable javascript-relevant linter, default 'false'"
+    required: false
+    default: "false"
+  exclude:
+    description: "A Regex expression of exclusion files"
+    required: false
+    default: "^test/"
+  github-token-path:
+    description: "GitHub secret path in onepassword"
+    required: false
+    default: "op://DevOps/Git PAT - StoneHome - Action/credential"
+  onepass-token:
+    description: "A access-token for 1password authentication"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Configure 1Password Service Account
+      uses: ./.github/actions/setup-1password
+      with:
+        # Persist the 1Password Service Account Authorization token
+        # for next steps.
+        # Keep in mind that every single step in the job is now
+        # able to access the token.
+        onepass-token: ${{ inputs.onepass-token }}
+
+    - name: Load GitHub credentials
+      id: get-token
+      uses: ./.github/actions/load-github-token
+      with:
+        secret-path: ${{ inputs.github-token-path }}
+
+    - name: Regular linter
+      uses: super-linter/super-linter/slim@v7.2.1
+      env:
+        # To report GitHub Actions status checks
+        GITHUB_TOKEN: ${{ steps.get-token.outputs.token }}
+        VALIDATE_YAML: true
+        VALIDATE_JSON: true
+        VALIDATE_JSON_PRETTIER: true
+        VALIDATE_GITLEAKS: true
+        VALIDATE_ENV: true
+        VALIDATE_DOCKERFILE_HADOLINT: true
+        VALIDATE_GIT_COMMITLINT: true
+        VALIDATE_GIT_MERGE_CONFLICT_MARKERS: true
+        FILTER_REGEX_EXCLUDE: ${{ inputs.exclude }}
+
+    - name: Python Linter
+      if: ${{ inputs.python == 'true' }}
+      uses: super-linter/super-linter/slim@v7.2.1
+      env:
+        GITHUB_TOKEN: ${{ steps.get-token.outputs.token }}
+        VALIDATE_PYTHON_BLACK: true
+        VALIDATE_JUPYTER_NBQA_BLACK: true
+        FILTER_REGEX_EXCLUDE: ${{ inputs.exclude }}
+
+    - name: JavaScript Linting
+      if: ${{ inputs.javascript == 'true' }}
+      uses: super-linter/super-linter/slim@v7.2.1
+      env:
+        GITHUB_TOKEN: ${{ steps.get-token.outputs.token }}
+        VALIDATE_JAVASCRIPT_ESLINT: true
+        FILTER_REGEX_EXCLUDE: ${{ inputs.exclude }}

@@ -1,0 +1,14 @@
+name: "Setup 1Password"
+description: "Configures 1Password Service Account"
+inputs:
+  onepass-token:
+    description: "The Service Account Token"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Configure 1Password Service Account
+      uses: 1password/load-secrets-action/configure@v2
+      with:
+        service-account-token: ${{ inputs.onepass-token }}
