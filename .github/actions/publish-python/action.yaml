@@ -32,11 +32,6 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      # 1. Checkout the repository
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
       # 2. Set up Python & Poetry environment
       - name: Setup Python and Poetry
         uses: stone-home/Action-Stone-DevOps/.github/actions/setup-poetry
