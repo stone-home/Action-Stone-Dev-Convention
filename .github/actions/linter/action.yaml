@@ -82,6 +82,8 @@ runs:
         GITHUB_TOKEN: ${{ steps.get-token.outputs.token }}
         VALIDATE_JAVASCRIPT_ES: true
         VALIDATE_JAVASCRIPT_PRETTIER: true
+        VALIDATE_TYPESCRIPT_ES: true
+        VALIDATE_TYPESCRIPT_PRETTIER: true
         FILTER_REGEX_EXCLUDE: ${{ inputs.exclude }}
 
     - name: LaTex Linting
