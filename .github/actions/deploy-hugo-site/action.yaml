@@ -40,7 +40,7 @@ runs:
 
     - name: Get Personal Token
       id: get-token
-      uses: ./.github/actions/load-github-token@trunk
+      uses: ./.github/actions/load-github-token
       with:
         secret-path: ${{ inputs.github-token-path }}
 

@@ -16,13 +16,13 @@ runs:
         node-version: 20 # Upgraded to LTS
 
     - name: Setup 1Password
-      uses: ./.github/actions/setup-1password@trunk
+      uses: ./.github/actions/setup-1password
       with:
         onepass-token: ${{ inputs.onepass-token }}
 
     - name: Get Bot Token
       id: get-token
-      uses: ./.github/actions/load-github-token@trunk
+      uses: ./.github/actions/load-github-token
       with:
         secret-path: ${{ inputs.github-token-path }}
 
