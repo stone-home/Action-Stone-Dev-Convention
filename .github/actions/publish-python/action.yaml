@@ -3,11 +3,11 @@ name: Workflow-PyPi Publish via Poetry
 inputs:
   python-version:
     description: "Python Version"
-    required: true
+    required: false
     default: "3.11"
   poetry-version:
     description: "Poetry Version"
-    required: true
+    required: false
     default: "1.8.5"
   version-id:
     description: "Release name or ID"
