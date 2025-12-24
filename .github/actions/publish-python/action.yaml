@@ -43,7 +43,7 @@ jobs:
       - name: Configure 1Password Service Account
         uses: stone-home/Action-Stone-DevOps/.github/actions/setup-1password
         with:
-          onepass-token: ${{ secrets.onepass-token }}
+          onepass-token: ${{ inputs.onepass-token }}
 
       - name: Load credentials
         id: load-credentials

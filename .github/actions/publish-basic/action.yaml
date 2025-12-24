@@ -19,7 +19,7 @@ runs:
     - name: Setup 1Password
       uses: ./.github/actions/setup-1password@trunk
       with:
-        onepass-token: ${{ secrets.onepass-token }}
+        onepass-token: ${{ inputs.onepass-token }}
 
     - name: Get Bot Token
       id: get-token

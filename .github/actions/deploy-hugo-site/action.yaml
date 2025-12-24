@@ -36,7 +36,7 @@ runs:
     - name: Configure 1Password Service Account
       uses: ./.github/actions/setup-1password
       with:
-        onepass-token: ${{ secrets.onepass-token }}
+        onepass-token: ${{ inputs.onepass-token }}
 
     - name: Get Personal Token
       id: get-token
