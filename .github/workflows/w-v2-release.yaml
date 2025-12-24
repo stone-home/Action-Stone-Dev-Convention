@@ -18,6 +18,10 @@ on:
         required: false
         type: string
         default: "op://DevOps/Git PAT - StoneHome - Action/credential"
+      nodejs-version:
+        required: true
+        type: string
+        default: "20"
       python-version:
         required: true
         type: string
@@ -76,6 +80,7 @@ jobs:
           fetch-depth: 0
       - uses: ./.github/actions/publish-npm
         with:
+          node-version: ${{ inputs.nodejs-version }}
           github-token-path: ${{ inputs.git-token-path }}
           onepass-token: ${{ secrets.onepass-token }}
   latex:

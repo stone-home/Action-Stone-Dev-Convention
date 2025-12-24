@@ -1,5 +1,9 @@
 name: Semantic Release (Node)
 inputs:
+  node-version:
+    description: "NodeJS version"
+    required: false
+    default: "20"
   github-token-path:
     description: "The path of GitHub token"
     required: false
@@ -13,7 +17,7 @@ runs:
   steps:
     - uses: actions/setup-node@v4
       with:
-        node-version: 20 # Upgraded to LTS
+        node-version: ${{ inputs.node-version}}
 
     - name: Setup 1Password
       uses: ./.github/actions/setup-1password
