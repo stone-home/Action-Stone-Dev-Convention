@@ -34,13 +34,13 @@ runs:
         hugo --minify
 
     - name: Configure 1Password Service Account
-      uses: ./.github/actions/setup-1password
+      uses: stone-home/Action-Stone-DevOps/.github/actions/setup-1password@trunk
       with:
         onepass-token: ${{ inputs.onepass-token }}
 
     - name: Get Personal Token
       id: get-token
-      uses: ./.github/actions/load-github-token
+      uses: stone-home/Action-Stone-DevOps/.github/actions/load-github-token@trunk
       with:
         secret-path: ${{ inputs.github-token-path }}
 

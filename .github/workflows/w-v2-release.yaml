@@ -61,7 +61,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: ./.github/actions/publish-python
+      - uses: stone-home/Action-Stone-DevOps/.github/actions/publish-python@trunk
         with:
           onepass-token: ${{ secrets.onepass-token }}
           python-version: ${{ inputs.python-version }}
@@ -78,7 +78,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: ./.github/actions/publish-npm
+      - uses: stone-home/Action-Stone-DevOps/.github/actions/publish-npm@trunk
         with:
           node-version: ${{ inputs.nodejs-version }}
           github-token-path: ${{ inputs.git-token-path }}
@@ -91,7 +91,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: ./.github/actions/publish-latex
+      - uses: stone-home/Action-Stone-DevOps/.github/actions/publish-latex@trunk
         with:
           github-token-path: ${{ inputs.git-token-path }}
           onepass-token: ${{ secrets.onepass-token }}
@@ -103,7 +103,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: ./.github/actions/publish-basic
+      - uses: stone-home/Action-Stone-DevOps/.github/actions/publish-basic@trunk
         with:
           github-token-path: ${{ inputs.git-token-path }}
           onepass-token: ${{ secrets.onepass-token }}

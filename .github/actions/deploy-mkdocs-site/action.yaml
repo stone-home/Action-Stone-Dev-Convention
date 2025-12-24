@@ -20,7 +20,7 @@ runs:
   using: "composite"
   steps:
     - name: Setup Python and Poetry
-      uses: ./.github/actions/setup-poetry
+      uses: stone-home/Action-Stone-DevOps/.github/actions/setup-poetry@trunk
       with:
         python-version: ${{ inputs.python-version }}
         poetry-version: ${{ inputs.poetry-version }}
@@ -30,13 +30,13 @@ runs:
       run: poetry run mkdocs build
 
     - name: Configure 1Password Service Account
-      uses: ./.github/actions/setup-1password
+      uses: stone-home/Action-Stone-DevOps/.github/actions/setup-1password@trunk
       with:
         onepass-token: ${{ inputs.onepass-token }}
 
     - name: Get Personal Token
       id: get-token
-      uses: ./.github/actions/load-github-token
+      uses: stone-home/Action-Stone-DevOps/.github/actions/load-github-token@trunk
       with:
         secret-path: ${{ inputs.github-token-path }}
 

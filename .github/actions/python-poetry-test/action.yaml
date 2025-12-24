@@ -14,7 +14,7 @@ runs:
   using: "composite"
   steps:
     - name: Setup Environment
-      uses: ./.github/actions/setup-poetry
+      uses: stone-home/Action-Stone-DevOps/.github/actions/setup-poetry@trunk
       with:
         python-version: ${{ inputs.python-version }}
         poetry-version: ${{ inputs.poetry-version }}

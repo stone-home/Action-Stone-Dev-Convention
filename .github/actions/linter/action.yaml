@@ -33,7 +33,7 @@ runs:
   using: "composite"
   steps:
     - name: Configure 1Password Service Account
-      uses: ./.github/actions/setup-1password
+      uses: stone-home/Action-Stone-DevOps/.github/actions/setup-1password@trunk
       with:
         # Persist the 1Password Service Account Authorization token
         # for next steps.
@@ -43,7 +43,7 @@ runs:
 
     - name: Load GitHub credentials
       id: get-token
-      uses: ./.github/actions/load-github-token
+      uses: stone-home/Action-Stone-DevOps/.github/actions/load-github-token@trunk
       with:
         secret-path: ${{ inputs.github-token-path }}
 
