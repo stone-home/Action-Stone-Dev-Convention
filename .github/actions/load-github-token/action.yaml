@@ -54,3 +54,5 @@ runs:
 
         # 4. Set the output for the action
         echo "GITHUB_TOKEN=$TOKEN_VALUE" >> $GITHUB_OUTPUT
+      env:
+        OP_SERVICE_ACCOUNT_TOKEN: ${{ inputs.onepass-token}}
