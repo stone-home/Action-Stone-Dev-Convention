@@ -71,6 +71,7 @@ runs:
         VALIDATE_DOCKERFILE_HADOLINT: true
         VALIDATE_GIT_COMMITLINT: true
         VALIDATE_GIT_MERGE_CONFLICT_MARKERS: true
+        VALIDATE_ALL_CODEBASE: false
         FILTER_REGEX_EXCLUDE: ${{ inputs.exclude }}
 
     - name: Python Linter
@@ -80,6 +81,7 @@ runs:
         GITHUB_TOKEN: ${{ steps.get-token.outputs.token }}
         VALIDATE_PYTHON_BLACK: true
         VALIDATE_JUPYTER_NBQA_BLACK: true
+        VALIDATE_ALL_CODEBASE: false
         FILTER_REGEX_EXCLUDE: ${{ inputs.exclude }}
 
     - name: JavaScript Linting
@@ -91,6 +93,7 @@ runs:
         VALIDATE_JAVASCRIPT_PRETTIER: true
         VALIDATE_TYPESCRIPT_ES: true
         VALIDATE_TYPESCRIPT_PRETTIER: true
+        VALIDATE_ALL_CODEBASE: false
         FILTER_REGEX_EXCLUDE: ${{ inputs.exclude }}
 
     - name: LaTex Linting
@@ -99,4 +102,5 @@ runs:
       env:
         GITHUB_TOKEN: ${{ steps.get-token.outputs.token }}
         VALIDATE_LATEX: true
+        VALIDATE_ALL_CODEBASE: false
         FILTER_REGEX_EXCLUDE: ${{ inputs.exclude }}
