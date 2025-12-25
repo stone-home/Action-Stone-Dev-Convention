@@ -21,10 +21,6 @@ runs:
       if: ${{ inputs.kubernetes-mode == 'true' }}
       shell: bash
       run: apt-get update && apt-get install -y unzip
-    - name: Install unzip
-      if: ${{ inputs.kubernetes-mode == 'true' }}
-      shell: bash
-      run: apk add --no-cache unzip
     - name: Install 1Password CLI
       if: ${{ inputs.kubernetes-mode == 'true' }}
       uses: 1password/install-cli-action@v2
