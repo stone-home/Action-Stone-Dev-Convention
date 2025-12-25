@@ -7,20 +7,50 @@ inputs:
     description: "The 1Password path to the secret"
     required: false
     default: "op://DevOps/Git PAT - StoneHome - Action/credential"
+  kubernetes-mode:
+    description: "enable kubernetes mode, meaning that this action run on a host with ARC kubernetes mode"
+    required: false
+    default: "false"
+  onepass-token:
+    description: "The Service Account Token. Only needed when kubernetes-mode is true"
+    required: false
 
 outputs:
   # 2. Map the step output to the action output so workflows can use it
   token:
     description: "The actual token value"
-    value: ${{ steps.load-secret.outputs.GITHUB_TOKEN }}
+    value: ${{ inputs.kubernetes-mode == 'true' && steps.load-secret-cli.outputs.GITHUB_TOKEN || steps.load-secret-docker.outputs.GITHUB_TOKEN }}
 
 runs:
   using: "composite"
   steps:
     - name: Load Secret
       id: load-secret
+      if: ${{ inputs.kubernetes-mode == 'false' }}
       uses: 1password/load-secrets-action@v2
       with:
         export-env: false # Keep false to use outputs
       env:
         GITHUB_TOKEN: ${{ inputs.secret-path }}
+    - name: Load Secret with op
+      id: load-secret-cli
+      if: ${{ inputs.kubernetes-mode == 'true' }}
+      shell: bash
+      run: |
+        # 1. Check if 'op' is installed
+        if ! command -v op &> /dev/null; then
+          echo "::error::1Password CLI (op) not found. Please install it or use a runner image that includes it."
+          exit 1
+        fi
+
+        # 2. Fetch the secret using the CLI
+        # We use the 'read' command which handles 'op://' URIs directly
+        echo "Fetching secret from ${{ inputs.secret-path }}..."
+
+        TOKEN_VALUE=$(op read "${{ inputs.secret-path }}")
+
+        # 3. Mask the secret so it doesn't leak in logs
+        echo "::add-mask::$TOKEN_VALUE"
+
+        # 4. Set the output for the action
+        echo "GITHUB_TOKEN=$TOKEN_VALUE" >> $GITHUB_OUTPUT

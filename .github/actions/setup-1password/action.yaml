@@ -4,11 +4,19 @@ inputs:
   onepass-token:
     description: "The Service Account Token"
     required: true
+  kubernetes-mode:
+    description: "enable kubernetes mode, meaning that this action run on a host with ARC kubernetes mode"
+    required: false
+    default: "false"
 
 runs:
   using: "composite"
   steps:
     - name: Configure 1Password Service Account
+      if: ${{ inputs.kubernetes-mode == 'false' }}
       uses: 1password/load-secrets-action/configure@v2
       with:
         service-account-token: ${{ inputs.onepass-token }}
+    - name: Install 1Password CLI
+      if: ${{ inputs.kubernetes-mode == 'true' }}
+      uses: 1password/install-cli-action@v2
