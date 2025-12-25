@@ -9,6 +9,7 @@ inputs:
     required: true
   target_dir_path:
     description: "The dir path where notes are located"
+    required: true
   python-version:
     description: "Python Version"
     required: false
@@ -17,13 +18,10 @@ inputs:
     description: "Poetry Version"
     required: false
     default: "2.1.4"
-  project-name:
-    description: "Project Name"
-    required: true
   github-token-path:
     description: "1Password Secret Path of GitHub PAT"
     required: false
-    default: "op://DevOps/Git PAT - Homestone - GitHub Action/credential"
+    default: "op://DevOps/Git PAT - StoneHome - Action/credential"
   github-dify-repo-token:
     description: "1Password Secret Path of GitHub PAT"
     required: false
@@ -80,11 +78,28 @@ runs:
         kubernetes-mode: ${{ inputs.kubernetes-mode }}
         onepass-token: ${{ inputs.onepass-token }}
 
+    - name: Get Cloud Token Username
+      id: get-cloud-username
+      uses: stone-home/Action-Stone-DevOps/.github/actions/load-github-token@trunk
+      with:
+        secret-path: "op://DevOps/CloudFlare - Service Token/username"
+        kubernetes-mode: ${{ inputs.kubernetes-mode }}
+        onepass-token: ${{ inputs.onepass-token }}
+
+    - name: Get Cloud Token Cred
+      id: get-cloud-cred
+      uses: stone-home/Action-Stone-DevOps/.github/actions/load-github-token@trunk
+      with:
+        secret-path: "op://DevOps/CloudFlare - Service Token/credential"
+        kubernetes-mode: ${{ inputs.kubernetes-mode }}
+        onepass-token: ${{ inputs.onepass-token }}
+
     - name: Set up Python & Poetry
       uses: stone-home/Action-Stone-DevOps/.github/actions/setup-poetry@trunk
       with:
         python-version: ${{ inputs.python-version }}
         poetry-version: ${{ inputs.poetry-version }}
+        kubernetes-mode: ${{ inputs.kubernetes-mode }}
 
     - name: Checkout Dify repository
       uses: actions/checkout@v4
@@ -100,8 +115,10 @@ runs:
         cd dify_repo
         export PYTHONPATH="${PYTHONPATH}:$(pwd)"
         poetry install
-        python main.py \
+        poetry run python main.py \
         --host "${{ inputs.dify-url }}" \
-        -dir "${{ inputs.target_dir_path }}"
+        --dir "${{ inputs.target_dir_path }}"
       env:
         DIFY_API_KEY: ${{ steps.get-dify-api-token.outputs.token }}
+        CF-Access-Client-Id: ${{ steps.get-cloud-username.outputs.token }}
+        CF-Access-Client-Secret: ${{ steps.get-cloud-cred.outputs.token}}

@@ -9,10 +9,22 @@ inputs:
     description: "Version of Poetry to use"
     required: true
     default: "1.8.5"
+  kubernetes-mode:
+    description: "enable kubernetes mode, meaning that this action run on a host with ARC kubernetes mode"
+    required: false
+    default: "false"
 
 runs:
   using: "composite"
   steps:
+    - name: Install pipx
+      if: ${{ inputs.kubernetes-mode == 'true' }}
+      shell: bash
+      run: |
+        apt update
+        apt install -y pipx
+        echo "$HOME/.local/bin" >> $GITHUB_PATH
+
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
