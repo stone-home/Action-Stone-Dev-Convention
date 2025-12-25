@@ -23,6 +23,7 @@ on:
         required: false
         type: string
         default: "/images/posts/hero/project-release.jpeg"
+
     secrets:
       onepass_token:
         description: "A access-token for 1password authorsation"

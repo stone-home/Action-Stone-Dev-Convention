@@ -28,6 +28,10 @@ inputs:
     description: "1Password Secret Path of GitHub PAT"
     required: false
     default: "op://DevOps/Git PAT - Personal - GitHub Action/credential"
+  kubernetes-mode:
+    description: "enable kubernetes mode, meaning that this action run on a host with ARC kubernetes mode"
+    required: false
+    default: "false"
 
 runs:
   using: "composite"
@@ -46,12 +50,15 @@ runs:
       uses: stone-home/Action-Stone-DevOps/.github/actions/setup-1password@trunk
       with:
         onepass-token: ${{ inputs.onepass-token }}
+        kubernetes-mode: ${{ inputs.kubernetes-mode }}
 
     - name: Get Personal Token
       id: get-token
       uses: stone-home/Action-Stone-DevOps/.github/actions/load-github-token@trunk
       with:
         secret-path: ${{ inputs.github-token-path }}
+        kubernetes-mode: ${{ inputs.kubernetes-mode }}
+        onepass-token: ${{ inputs.onepass-token }}
 
     - name: Checkout target repository
       uses: actions/checkout@v4

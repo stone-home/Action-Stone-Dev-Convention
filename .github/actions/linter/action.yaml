@@ -23,6 +23,10 @@ inputs:
   onepass-token:
     description: "A access-token for 1password authentication"
     required: true
+  kubernetes-mode:
+    description: "enable kubernetes mode, meaning that this action run on a host with ARC kubernetes mode"
+    required: false
+    default: "false"
 
 # ===========================================================================
 # Required Permission
@@ -44,12 +48,15 @@ runs:
         # Keep in mind that every single step in the job is now
         # able to access the token.
         onepass-token: ${{ inputs.onepass-token }}
+        kubernetes-mode: ${{ inputs.kubernetes-mode }}
 
     - name: Load GitHub credentials
       id: get-token
       uses: stone-home/Action-Stone-DevOps/.github/actions/load-github-token@trunk
       with:
         secret-path: ${{ inputs.github-token-path }}
+        kubernetes-mode: ${{ inputs.kubernetes-mode }}
+        onepass-token: ${{ inputs.onepass-token }}
 
     - name: Regular linter
       uses: super-linter/super-linter/slim@v7.2.1

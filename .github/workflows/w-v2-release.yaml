@@ -46,6 +46,11 @@ on:
         required: false
         type: string
         default: "op://DevOps/PyPi Token/credential"
+      kubernetes-mode:
+        description: "enable kubernetes mode, meaning that this action run on a host with ARC kubernetes mode"
+        required: false
+        type: boolean
+        default: false
     secrets:
       onepass-token:
         description: "A access-token for 1password authorsation"
@@ -73,6 +78,7 @@ jobs:
           github-token-path: ${{ inputs.git-token-path }}
           pypi-enable: ${{ inputs.pypi-enable }}
           pypi-token-path: ${{ inputs.pypi-token-path }}
+          kubernetes-mode: ${{ inputs.kubernetes-mode }}
   js:
     name: Release Project to GitHub Rlease in NPM environment
     if: inputs.nodejs-project
@@ -86,6 +92,7 @@ jobs:
           node-version: ${{ inputs.nodejs-version }}
           github-token-path: ${{ inputs.git-token-path }}
           onepass-token: ${{ secrets.onepass-token }}
+          kubernetes-mode: ${{ inputs.kubernetes-mode }}
   latex:
     name: Release Project to GitHub Rlease for LaTex Documents
     if: inputs.latex-project
@@ -99,6 +106,7 @@ jobs:
           node-version: ${{ inputs.nodejs-version }}
           github-token-path: ${{ inputs.git-token-path }}
           onepass-token: ${{ secrets.onepass-token }}
+          kubernetes-mode: ${{ inputs.kubernetes-mode }}
   other:
     name: Basic Release Process
     if: inputs.python-project == false && inputs.nodejs-project == false && inputs.latex-project == false
@@ -111,3 +119,4 @@ jobs:
         with:
           github-token-path: ${{ inputs.git-token-path }}
           onepass-token: ${{ secrets.onepass-token }}
+          kubernetes-mode: ${{ inputs.kubernetes-mode }}

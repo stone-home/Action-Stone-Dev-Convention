@@ -27,6 +27,10 @@ inputs:
   onepass-token:
     required: true
     description: "A access-token for 1password authorization"
+  kubernetes-mode:
+    description: "enable kubernetes mode, meaning that this action run on a host with ARC kubernetes mode"
+    required: false
+    default: "false"
 
 # ===========================================================================
 # Required Permission
@@ -49,15 +53,46 @@ runs:
       uses: stone-home/Action-Stone-DevOps/.github/actions/setup-1password@trunk
       with:
         onepass-token: ${{ inputs.onepass-token }}
+        kubernetes-mode: ${{ inputs.kubernetes-mode }}
 
     - name: Load credentials
       id: load-credentials
+      if: ${{ inputs.kubernetes-mode == 'false' }}
       uses: 1password/load-secrets-action@v2
       with:
         export-env: true
       env:
         GITHUB_TOKEN: ${{ inputs.github-token-path }}
         PYPI_TOKEN: ${{ inputs.pypi-token-path }}
+
+    - name: Load Secret with op
+      id: load-credentials-cli
+      if: ${{ inputs.kubernetes-mode == 'true' }}
+      shell: bash
+      run: |
+        # 1. Check if 'op' is installed
+        if ! command -v op &> /dev/null; then
+          echo "::error::1Password CLI (op) not found. Please install it or use a runner image that includes it."
+          exit 1
+        fi
+
+        # 2. Fetch the secret using the CLI
+        # We use the 'read' command which handles 'op://' URIs directly
+        echo "Fetching secret from ${{ inputs.github-token-path }}..."
+        TOKEN_VALUE=$(op read "${{ inputs.github-token-path }}")
+
+        echo "Fetching secret from ${{ inputs.pypi-token-path }}..."
+        PYPI_TOKEN_VALUE=$(op read "${{ inputs.pypi-token-path }}")
+
+        # 3. Mask the secret so it doesn't leak in logs
+        echo "::add-mask::$TOKEN_VALUE"
+        echo "::add-mask::PYPI_TOKEN_VALUE"
+
+        # 4. Set the output for the action
+        echo "GITHUB_TOKEN=$TOKEN_VALUE" >> $GITHUB_OUTPUT
+        echo "PYPI_TOKEN=PYPI_TOKEN_VALUE" >> $GITHUB_OUTPUT
+      env:
+        OP_SERVICE_ACCOUNT_TOKEN: ${{ inputs.onepass-token}}
 
     # 7. create a branch
     - name: Create Release Branch
