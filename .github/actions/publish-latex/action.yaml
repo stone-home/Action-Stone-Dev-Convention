@@ -26,7 +26,8 @@ runs:
   using: composite
   steps:
     # 1. Setup Node (Required for Semantic Release tool only)
-    - uses: actions/setup-node@v4
+    - name: Setup NodeJS
+      uses: stone-home/Action-Stone-DevOps/.github/actions/setup-nodejs@trunk
       with:
         node-version: ${{ inputs.node-version }}
 

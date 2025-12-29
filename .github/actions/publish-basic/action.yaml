@@ -1,6 +1,10 @@
 name: Semantic Release (Basic)
 description: "Execute a basic release process, like bash or other scripts"
 inputs:
+  node-version:
+    description: "NodeJS version"
+    required: false
+    default: "20"
   onepass-token:
     description: "OnePassword Token"
     required: true
@@ -22,9 +26,10 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - uses: actions/setup-node@v4
+    - name: Setup NodeJS
+      uses: stone-home/Action-Stone-DevOps/.github/actions/setup-nodejs@trunk
       with:
-        node-version: 20
+        node-version: ${{ inputs.node-version }}
 
     - name: Setup 1Password
       uses: stone-home/Action-Stone-DevOps/.github/actions/setup-1password@trunk

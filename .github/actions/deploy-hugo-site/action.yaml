@@ -5,6 +5,10 @@ inputs:
     description: "hugo version"
     required: false
     default: "0.144.2"
+  node-version:
+    description: "NodeJS version"
+    required: false
+    default: "20"
   github-token-path:
     description: "1password path of GitHub token"
     required: false
@@ -26,15 +30,14 @@ runs:
         hugo-version: ${{ inputs.hugo-version }}
         extended: true
 
-    - name: Setup Node
-      uses: actions/setup-node@v4
+    - name: Setup NodeJS
+      uses: stone-home/Action-Stone-DevOps/.github/actions/setup-nodejs@trunk
       with:
-        node-version: 20
+        node-version: ${{ inputs.node-version }}
 
     - name: Install Dependencies & Build
       shell: bash
       run: |
-        npm ci
         hugo --minify
 
     - name: Configure 1Password Service Account
