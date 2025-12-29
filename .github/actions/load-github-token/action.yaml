@@ -19,7 +19,7 @@ outputs:
   # 2. Map the step output to the action output so workflows can use it
   token:
     description: "The actual token value"
-    value: ${{ inputs.kubernetes-mode == 'true' && steps.load-secret-cli.outputs.GITHUB_TOKEN || steps.load-secret-docker.outputs.GITHUB_TOKEN }}
+    value: ${{ inputs.kubernetes-mode == 'true' && steps.load-secret-cli.outputs.ONEPASS_TOKEN || steps.load-secret.outputs.ONEPASS_TOKEN }}
 
 runs:
   using: "composite"
@@ -31,7 +31,7 @@ runs:
       with:
         export-env: false # Keep false to use outputs
       env:
-        GITHUB_TOKEN: ${{ inputs.secret-path }}
+        ONEPASS_TOKEN: ${{ inputs.secret-path }}
     - name: Load Secret with op
       id: load-secret-cli
       if: ${{ inputs.kubernetes-mode == 'true' }}
@@ -53,6 +53,6 @@ runs:
         echo "::add-mask::$TOKEN_VALUE"
 
         # 4. Set the output for the action
-        echo "GITHUB_TOKEN=$TOKEN_VALUE" >> $GITHUB_OUTPUT
+        echo "ONEPASS_TOKEN=$TOKEN_VALUE" >> $GITHUB_OUTPUT
       env:
         OP_SERVICE_ACCOUNT_TOKEN: ${{ inputs.onepass-token}}
