@@ -78,7 +78,7 @@ jobs:
         if: ${{ inputs.nodejs_project }}
         run: npm run build
 
-      - run: npx semantic-release@21.0.2
+      - run: npx semantic-release@25.0.2
         name: create a new release page and tag
         env:
           GITHUB_TOKEN: ${{ steps.load-credentials.outputs.GITHUB_TOKEN }}

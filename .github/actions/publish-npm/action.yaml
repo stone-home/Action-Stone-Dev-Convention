@@ -4,6 +4,14 @@ inputs:
     description: "NodeJS version"
     required: false
     default: "20"
+  enable-trusted-publisher:
+    description: "Enable trusted publisher method to publish code"
+    required: false
+    default: "true"
+  npm-token-path:
+    description: "The path of NPM token"
+    required: false
+    default: "op://DevOps/NPM Token/credential"
   github-token-path:
     description: "The path of GitHub token"
     required: false
@@ -39,6 +47,15 @@ runs:
         kubernetes-mode: ${{ inputs.kubernetes-mode }}
         onepass-token: ${{ inputs.onepass-token }}
 
+    - name: Get NPM Token
+      id: get-npm-token
+      if: ${{ inputs.enable-trusted-publisher == 'false' }}
+      uses: stone-home/Action-Stone-DevOps/.github/actions/load-github-token@trunk
+      with:
+        secret-path: ${{ inputs.npm-token-path }}
+        kubernetes-mode: ${{ inputs.kubernetes-mode }}
+        onepass-token: ${{ inputs.onepass-token }}
+
     - name: Setup NodeJS
       uses: stone-home/Action-Stone-DevOps/.github/actions/setup-nodejs@trunk
       with:
@@ -52,6 +69,7 @@ runs:
 
     - name: Semantic Release
       shell: bash
-      run: npx semantic-release@21.0.2
+      run: npx semantic-release@25.0.2
       env:
         GITHUB_TOKEN: ${{ steps.get-token.outputs.token }}
+        NPM_TOKEN: ${{ inputs.enable-trusted-publisher == 'true' && 'dummy_token' || steps.get-npm-token.outputs.token}}
