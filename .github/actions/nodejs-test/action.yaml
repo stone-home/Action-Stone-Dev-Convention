@@ -1,0 +1,19 @@
+name: Run Testcases for NodeJS Project
+description: "Execute a 'npm test' for node project"
+inputs:
+  node-version:
+    description: "NodeJS version"
+    required: false
+    default: "20"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Setup NodeJS
+      uses: stone-home/Action-Stone-DevOps/.github/actions/setup-nodejs@trunk
+      with:
+        node-version: ${{ inputs.node-version }}
+
+    - name: Run Testing
+      shell: bash
+      run: npm test
