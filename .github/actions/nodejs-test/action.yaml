@@ -1,5 +1,5 @@
-name: Semantic Release (Basic)
-description: "Execute a basic release process, like bash or other scripts"
+name: Run Testcases for NodeJS Project
+description: "Execute a 'npm test' for node project"
 inputs:
   node-version:
     description: "NodeJS version"
