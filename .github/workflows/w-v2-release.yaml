@@ -63,7 +63,7 @@ permissions:
   pull-requests: write # to be able to comment on released pull requests
   id-token: write # Required for OIDC/Trusted Publishing
 jobs:
-  python:
+  python-publish:
     name: Publish Python Project to PyPi
     if: inputs.python-project
     runs-on: ubuntu-latest
@@ -109,7 +109,7 @@ jobs:
           github-token-path: ${{ inputs.git-token-path }}
           onepass-token: ${{ secrets.onepass-token }}
           kubernetes-mode: ${{ inputs.kubernetes-mode }}
-  other:
+  basic-github-release:
     name: Basic Release Process
     if: inputs.python-project == false && inputs.nodejs-project == false && inputs.latex-project == false
     runs-on: ubuntu-latest
