@@ -55,44 +55,13 @@ runs:
         onepass-token: ${{ inputs.onepass-token }}
         kubernetes-mode: ${{ inputs.kubernetes-mode }}
 
-    - name: Load credentials
-      id: load-credentials
-      if: ${{ inputs.kubernetes-mode == 'false' }}
-      uses: 1password/load-secrets-action@v2
+    - name: Get GitHub Token
+      id: get-github-token
+      uses: stone-home/Action-Stone-DevOps/.github/actions/load-github-token@trunk
       with:
-        export-env: true
-      env:
-        GITHUB_TOKEN: ${{ inputs.github-token-path }}
-        PYPI_TOKEN: ${{ inputs.pypi-token-path }}
-
-    - name: Load Secret with op
-      id: load-credentials-cli
-      if: ${{ inputs.kubernetes-mode == 'true' }}
-      shell: bash
-      run: |
-        # 1. Check if 'op' is installed
-        if ! command -v op &> /dev/null; then
-          echo "::error::1Password CLI (op) not found. Please install it or use a runner image that includes it."
-          exit 1
-        fi
-
-        # 2. Fetch the secret using the CLI
-        # We use the 'read' command which handles 'op://' URIs directly
-        echo "Fetching secret from ${{ inputs.github-token-path }}..."
-        TOKEN_VALUE=$(op read "${{ inputs.github-token-path }}")
-
-        echo "Fetching secret from ${{ inputs.pypi-token-path }}..."
-        PYPI_TOKEN_VALUE=$(op read "${{ inputs.pypi-token-path }}")
-
-        # 3. Mask the secret so it doesn't leak in logs
-        echo "::add-mask::$TOKEN_VALUE"
-        echo "::add-mask::PYPI_TOKEN_VALUE"
-
-        # 4. Set the output for the action
-        echo "GITHUB_TOKEN=$TOKEN_VALUE" >> $GITHUB_OUTPUT
-        echo "PYPI_TOKEN=PYPI_TOKEN_VALUE" >> $GITHUB_OUTPUT
-      env:
-        OP_SERVICE_ACCOUNT_TOKEN: ${{ inputs.onepass-token}}
+        secret-path: ${{ inputs.github-token-path }}
+        kubernetes-mode: ${{ inputs.kubernetes-mode }}
+        onepass-token: ${{ inputs.onepass-token }}
 
     # 7. create a branch
     - name: Create Release Branch
@@ -104,6 +73,9 @@ runs:
         git checkout -b "$BRANCH_NAME"
         git push --set-upstream origin "$BRANCH_NAME"
         echo "Created branch: $BRANCH_NAME"
+      env:
+        GITHUB_TOKEN: ${{ steps.get-github-token.outputs.token}}
+
     # 8. Update version in pyproject.toml to match the tag version
     - name: Update version in pyproject.toml
       shell: bash
@@ -117,8 +89,18 @@ runs:
     - name: Build package
       shell: bash
       run: poetry build
+
     # 10. Publish the package
+    - name: Get PyPi Token
+      id: get-pypi-token
+      if: ${{ inputs.pypi_enable == 'true' }}
+      uses: stone-home/Action-Stone-DevOps/.github/actions/load-github-token@trunk
+      with:
+        secret-path: ${{ inputs.pypi-token-path }}
+        kubernetes-mode: ${{ inputs.kubernetes-mode }}
+        onepass-token: ${{ inputs.onepass-token }}
+
     - name: Publish package to PyPI
       if: ${{ inputs.pypi_enable == 'true' }}
       shell: bash
-      run: poetry publish -u __token__ -p ${{ env.PYPI_TOKEN }}
+      run: poetry publish -u __token__ -p ${{ steps.get-pypi-token.outputs.token }}

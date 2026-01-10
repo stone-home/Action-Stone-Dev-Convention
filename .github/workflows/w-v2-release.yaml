@@ -34,7 +34,8 @@ on:
         default: "1.8.5"
         description: "The version of Poetry"
       version-id:
-        required: true
+        description: "This value is only used when publish is required"
+        required: false
         type: string
       pypi-enable:
         description: "Feature only work when python-project is true"
