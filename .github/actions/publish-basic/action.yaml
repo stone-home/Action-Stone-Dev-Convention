@@ -4,7 +4,7 @@ inputs:
   node-version:
     description: "NodeJS version"
     required: false
-    default: "20"
+    default: "22"
   onepass-token:
     description: "OnePassword Token"
     required: true
@@ -26,10 +26,10 @@ inputs:
 runs:
   using: "composite"
   steps:
-    #    - name: Setup NodeJS
-    #      uses: stone-home/Action-Stone-DevOps/.github/actions/setup-nodejs@trunk
-    #      with:
-    #        node-version: ${{ inputs.node-version }}
+    - name: Setup NodeJS
+      uses: stone-home/Action-Stone-DevOps/.github/actions/setup-nodejs@trunk
+      with:
+        node-version: ${{ inputs.node-version }}
 
     - name: Setup 1Password
       uses: stone-home/Action-Stone-DevOps/.github/actions/setup-1password@trunk

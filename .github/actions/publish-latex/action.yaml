@@ -3,7 +3,7 @@ inputs:
   node-version:
     description: "NodeJS version"
     required: false
-    default: "20"
+    default: "22"
   github-token-path:
     description: "The path of GitHub token"
     required: false

@@ -3,7 +3,7 @@ inputs:
   node-version:
     description: "NodeJS version"
     required: false
-    default: "20"
+    default: "22"
   enable-trusted-publisher:
     description: "Enable trusted publisher method to publish code"
     required: false

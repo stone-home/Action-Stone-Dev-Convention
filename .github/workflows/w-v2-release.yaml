@@ -21,7 +21,7 @@ on:
       nodejs-version:
         required: false
         type: string
-        default: "20"
+        default: "22"
         description: "The version of NodeJS"
       python-version:
         required: false
