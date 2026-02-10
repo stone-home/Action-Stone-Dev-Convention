@@ -59,7 +59,7 @@ runs:
         onepass-token: ${{ inputs.onepass-token }}
 
     - name: Regular linter
-      uses: super-linter/super-linter/slim@v7.2.1
+      uses: super-linter/super-linter/slim@v8.5.0
       env:
         # To report GitHub Actions status checks
         GITHUB_TOKEN: ${{ steps.get-token.outputs.token }}
@@ -76,7 +76,7 @@ runs:
 
     - name: Python Linter
       if: ${{ inputs.python == 'true' }}
-      uses: super-linter/super-linter/slim@v7.2.1
+      uses: super-linter/super-linter/slim@v8.5.0
       env:
         GITHUB_TOKEN: ${{ steps.get-token.outputs.token }}
         VALIDATE_PYTHON_BLACK: true
@@ -86,7 +86,7 @@ runs:
 
     - name: JavaScript Linting
       if: ${{ inputs.javascript == 'true' }}
-      uses: super-linter/super-linter/slim@v7.2.1
+      uses: super-linter/super-linter/slim@v8.5.0
       env:
         GITHUB_TOKEN: ${{ steps.get-token.outputs.token }}
         VALIDATE_JAVASCRIPT_ES: true
@@ -98,7 +98,7 @@ runs:
 
     - name: LaTex Linting
       if: ${{ inputs.latext == 'true' }}
-      uses: super-linter/super-linter/slim@v7.2.1
+      uses: super-linter/super-linter/slim@v8.5.0
       env:
         GITHUB_TOKEN: ${{ steps.get-token.outputs.token }}
         VALIDATE_LATEX: true
