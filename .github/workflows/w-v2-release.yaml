@@ -53,12 +53,27 @@ on:
         type: boolean
         default: false
       docker-push:
-        description: "Build and push Docker image to GHCR"
+        description: "Build and push Docker image to GHCR or Docker Hub"
         required: false
         type: boolean
         default: false
+      docker-registry:
+        description: "Target registry: 'ghcr' or 'dockerhub'"
+        required: false
+        type: string
+        default: "ghcr"
+      docker-hub-username:
+        description: "Docker Hub username (required when docker-registry is dockerhub)"
+        required: false
+        type: string
+        default: ""
+      docker-hub-password-path:
+        description: "1Password secret path for Docker Hub token (required when docker-registry is dockerhub)"
+        required: false
+        type: string
+        default: ""
       docker-image-name:
-        description: "Full image name (e.g. ghcr.io/owner/repo). Defaults to ghcr.io/<repository>"
+        description: "Full image name (e.g. ghcr.io/owner/repo or username/repo for Docker Hub). Defaults by registry"
         required: false
         type: string
         default: ""
@@ -147,7 +162,10 @@ jobs:
           fetch-depth: 0
       - uses: stone-home/Action-Stone-DevOps/.github/actions/docker-push@trunk
         with:
+          registry: ${{ inputs.docker-registry }}
           github-token-path: ${{ inputs.git-token-path }}
+          docker-hub-username: ${{ inputs.docker-hub-username }}
+          docker-hub-password-path: ${{ inputs.docker-hub-password-path }}
           onepass-token: ${{ secrets.onepass-token }}
           kubernetes-mode: ${{ inputs.kubernetes-mode }}
           image-name: ${{ inputs.docker-image-name }}

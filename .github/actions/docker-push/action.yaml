@@ -1,10 +1,18 @@
 name: Docker Build and Push
-description: "Build a Docker image and push it to a container registry (e.g. GHCR)"
+description: "Build a Docker image and push it to GHCR or Docker Hub"
 inputs:
-  github-token-path:
-    description: "1Password secret path for GitHub PAT used to authenticate to GHCR"
+  registry:
+    description: "Target registry: 'ghcr' (GitHub Container Registry) or 'dockerhub'"
     required: false
-    default: "op://DevOps/Git PAT - StoneHome - Action/credential"
+    default: "ghcr"
+  registry-username:
+    description: "Registry username"
+    required: false
+    default: ""
+  registry-password-path:
+    description: "1Password secret path for Container Registry token"
+    required: false
+    default: "op://DevOps/Docker PAT - Git Action/credential"
   onepass-token:
     description: "OnePassword service account token for loading secrets"
     required: true
@@ -13,7 +21,7 @@ inputs:
     required: false
     default: "false"
   image-name:
-    description: "Full image name (e.g. ghcr.io/owner/repo). Defaults to ghcr.io/<github.repository>"
+    description: "Full image name (e.g. ghcr.io/owner/repo or username/repo for Docker Hub). Defaults by registry"
     required: false
     default: ""
   dockerfile:
@@ -43,11 +51,7 @@ runs:
       id: image
       shell: bash
       run: |
-        if [ -n "${{ inputs.image-name }}" ]; then
-          name="${{ inputs.image-name }}"
-        else
-          name="ghcr.io/${{ github.repository }}"
-        fi
+        name="${{ inputs.image-name }}"
         echo "name=$name" >> "$GITHUB_OUTPUT"
         # Build comma-separated full tags from input tag suffixes
         tags_in="${{ inputs.tags }}"
@@ -68,20 +72,28 @@ runs:
         onepass-token: ${{ inputs.onepass-token }}
         kubernetes-mode: ${{ inputs.kubernetes-mode }}
 
-    - name: Get GitHub Token
-      id: get-token
+    - name: Get Registry token
+      id: get-registry-token
       uses: stone-home/Action-Stone-DevOps/.github/actions/load-github-token@trunk
       with:
-        secret-path: ${{ inputs.github-token-path }}
+        secret-path: ${{ inputs.token-password-path }}
         kubernetes-mode: ${{ inputs.kubernetes-mode }}
         onepass-token: ${{ inputs.onepass-token }}
 
-    - name: Log in to Container Registry
+    - name: Log in to GitHub Container Registry
+      if: inputs.registry == 'ghcr'
       uses: docker/login-action@v3
       with:
         registry: ghcr.io
         username: ${{ github.actor }}
-        password: ${{ steps.get-token.outputs.token }}
+        password: ${{ steps.get-registry-token.outputs.token }}
+
+    - name: Log in to Docker Hub
+      if: inputs.registry == 'dockerhub'
+      uses: docker/login-action@v3
+      with:
+        username: ${{ inputs.docker-hub-username }}
+        password: ${{ steps.get-registry-token.outputs.token }}
 
     - name: Build and push Docker image
       uses: docker/build-push-action@v6
