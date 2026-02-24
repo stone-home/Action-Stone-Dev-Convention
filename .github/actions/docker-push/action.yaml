@@ -1,0 +1,92 @@
+name: Docker Build and Push
+description: "Build a Docker image and push it to a container registry (e.g. GHCR)"
+inputs:
+  github-token-path:
+    description: "1Password secret path for GitHub PAT used to authenticate to GHCR"
+    required: false
+    default: "op://DevOps/Git PAT - StoneHome - Action/credential"
+  onepass-token:
+    description: "OnePassword service account token for loading secrets"
+    required: true
+  kubernetes-mode:
+    description: "Enable kubernetes mode (run on host with ARC kubernetes mode)"
+    required: false
+    default: "false"
+  image-name:
+    description: "Full image name (e.g. ghcr.io/owner/repo). Defaults to ghcr.io/<github.repository>"
+    required: false
+    default: ""
+  dockerfile:
+    description: "Path to the Dockerfile"
+    required: false
+    default: "Dockerfile"
+  context:
+    description: "Build context path"
+    required: false
+    default: "."
+  tags:
+    description: "Comma-separated list of tags to push (e.g. latest,v1.0.0)"
+    required: false
+    default: "latest"
+
+# ===========================================================================
+# Required Permission
+# contents: read (checkout)
+# packages: write (push to GHCR)
+# ===========================================================================
+
+runs:
+  using: composite
+  steps:
+    # Resolve image name and build full tag list (image:tag1,image:tag2,...)
+    - name: Set image name and tags
+      id: image
+      shell: bash
+      run: |
+        if [ -n "${{ inputs.image-name }}" ]; then
+          name="${{ inputs.image-name }}"
+        else
+          name="ghcr.io/${{ github.repository }}"
+        fi
+        echo "name=$name" >> "$GITHUB_OUTPUT"
+        # Build comma-separated full tags from input tag suffixes
+        tags_in="${{ inputs.tags }}"
+        tags_full=""
+        IFS=',' read -ra TARR <<< "$tags_in"
+        for t in "${TARR[@]}"; do
+          t=$(echo "$t" | xargs)
+          [ -z "$t" ] && continue
+          tags_full="${tags_full}${name}:${t},"
+        done
+        tags_full="${tags_full%,}"
+        [ -z "$tags_full" ] && tags_full="${name}:latest"
+        echo "tags=${tags_full}" >> "$GITHUB_OUTPUT"
+
+    - name: Setup 1Password
+      uses: stone-home/Action-Stone-DevOps/.github/actions/setup-1password@trunk
+      with:
+        onepass-token: ${{ inputs.onepass-token }}
+        kubernetes-mode: ${{ inputs.kubernetes-mode }}
+
+    - name: Get GitHub Token
+      id: get-token
+      uses: stone-home/Action-Stone-DevOps/.github/actions/load-github-token@trunk
+      with:
+        secret-path: ${{ inputs.github-token-path }}
+        kubernetes-mode: ${{ inputs.kubernetes-mode }}
+        onepass-token: ${{ inputs.onepass-token }}
+
+    - name: Log in to Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ steps.get-token.outputs.token }}
+
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v6
+      with:
+        context: ${{ inputs.context }}
+        file: ${{ inputs.dockerfile }}
+        push: true
+        tags: ${{ steps.image.outputs.tags }}

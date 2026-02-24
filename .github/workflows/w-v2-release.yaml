@@ -52,6 +52,31 @@ on:
         required: false
         type: boolean
         default: false
+      docker-push:
+        description: "Build and push Docker image to GHCR"
+        required: false
+        type: boolean
+        default: false
+      docker-image-name:
+        description: "Full image name (e.g. ghcr.io/owner/repo). Defaults to ghcr.io/<repository>"
+        required: false
+        type: string
+        default: ""
+      dockerfile:
+        description: "Path to the Dockerfile"
+        required: false
+        type: string
+        default: "Dockerfile"
+      docker-context:
+        description: "Docker build context path"
+        required: false
+        type: string
+        default: "."
+      docker-tags:
+        description: "Comma-separated tags to push (e.g. latest,v1.0.0). Can use version-id when set"
+        required: false
+        type: string
+        default: "latest"
     secrets:
       onepass-token:
         description: "A access-token for 1password authorsation"
@@ -76,7 +101,7 @@ jobs:
           onepass-token: ${{ secrets.onepass-token }}
           python-version: ${{ inputs.python-version }}
           poetry-version: ${{ inputs.poetry-version }}
-          version-id: ${{ inputs.version-id }}
+          version-id: ${{ inputs.version-id || env.RELEASE_VERSION || github.ref_name }}
           github-token-path: ${{ inputs.git-token-path }}
           pypi-enable: ${{ inputs.pypi-enable }}
           pypi-token-path: ${{ inputs.pypi-token-path }}
@@ -109,6 +134,26 @@ jobs:
           github-token-path: ${{ inputs.git-token-path }}
           onepass-token: ${{ secrets.onepass-token }}
           kubernetes-mode: ${{ inputs.kubernetes-mode }}
+  docker-push:
+    name: Build and Push Docker Image
+    if: inputs.docker-push
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: stone-home/Action-Stone-DevOps/.github/actions/docker-push@trunk
+        with:
+          github-token-path: ${{ inputs.git-token-path }}
+          onepass-token: ${{ secrets.onepass-token }}
+          kubernetes-mode: ${{ inputs.kubernetes-mode }}
+          image-name: ${{ inputs.docker-image-name }}
+          dockerfile: ${{ inputs.dockerfile }}
+          context: ${{ inputs.docker-context }}
+          tags: ${{ inputs.docker-tags }}
   basic-github-release:
     name: Basic Release Process
     if: inputs.python-project == false && inputs.nodejs-project == false && inputs.latex-project == false
