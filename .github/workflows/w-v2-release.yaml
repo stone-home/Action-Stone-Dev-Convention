@@ -163,9 +163,8 @@ jobs:
       - uses: stone-home/Action-Stone-DevOps/.github/actions/docker-push@trunk
         with:
           registry: ${{ inputs.docker-registry }}
-          github-token-path: ${{ inputs.git-token-path }}
-          docker-hub-username: ${{ inputs.docker-hub-username }}
-          docker-hub-password-path: ${{ inputs.docker-hub-password-path }}
+          registry-username: ${{ inputs.docker-hub-username }}
+          registry-password-path: ${{ inputs.docker-hub-password-path }}
           onepass-token: ${{ secrets.onepass-token }}
           kubernetes-mode: ${{ inputs.kubernetes-mode }}
           image-name: ${{ inputs.docker-image-name }}

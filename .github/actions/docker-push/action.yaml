@@ -76,7 +76,7 @@ runs:
       id: get-registry-token
       uses: stone-home/Action-Stone-DevOps/.github/actions/load-github-token@trunk
       with:
-        secret-path: ${{ inputs.token-password-path }}
+        secret-path: ${{ inputs.registry-password-path }}
         kubernetes-mode: ${{ inputs.kubernetes-mode }}
         onepass-token: ${{ inputs.onepass-token }}
 
@@ -85,14 +85,14 @@ runs:
       uses: docker/login-action@v3
       with:
         registry: ghcr.io
-        username: ${{ github.actor }}
+        username: ${{ inputs.registry-username}}
         password: ${{ steps.get-registry-token.outputs.token }}
 
     - name: Log in to Docker Hub
       if: inputs.registry == 'dockerhub'
       uses: docker/login-action@v3
       with:
-        username: ${{ inputs.docker-hub-username }}
+        username: ${{ inputs.registry-username }}
         password: ${{ steps.get-registry-token.outputs.token }}
 
     - name: Build and push Docker image
