@@ -173,7 +173,7 @@ jobs:
           tags: ${{ inputs.docker-tags }}
   basic-github-release:
     name: Basic Release Process
-    if: inputs.python-project == false && inputs.nodejs-project == false && inputs.latex-project == false
+    if: inputs.python-project == false && inputs.nodejs-project == false && inputs.latex-project == false && inputs.docker-push == false
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
