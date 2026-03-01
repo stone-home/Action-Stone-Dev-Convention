@@ -7,6 +7,11 @@ on:
         type: string
         default: "ubuntu-latest"
         description: "The OS to run the release workflow on. Default to ubuntu-latest."
+      container-image:
+        required: false
+        type: string
+        default: "ghcr.io/actions/actions-runner:latest"
+        description: "The container image to run the release steps. Default to ghcr.io/actions/actions-runner:latest."
       python-project:
         required: false
         type: boolean
@@ -113,7 +118,7 @@ jobs:
     if: inputs.python-project
     runs-on: ${{ inputs.run-on }}
     container:
-      image: ghcr.io/actions/actions-runner:latest
+      image: ${{ inputs.container-image }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -133,7 +138,7 @@ jobs:
     if: inputs.nodejs-project
     runs-on: ${{ inputs.run-on }}
     container:
-      image: ghcr.io/actions/actions-runner:latest
+      image: ${{ inputs.container-image }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -149,7 +154,7 @@ jobs:
     if: inputs.latex-project
     runs-on: ${{ inputs.run-on }}
     container:
-      image: ghcr.io/actions/actions-runner:latest
+      image: ${{ inputs.container-image }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -165,7 +170,7 @@ jobs:
     if: inputs.docker-push
     runs-on: ${{ inputs.run-on }}
     container:
-      image: ghcr.io/actions/actions-runner:latest
+      image: ${{ inputs.container-image }}
     permissions:
       contents: read
       packages: write
@@ -189,7 +194,7 @@ jobs:
     if: inputs.python-project == false && inputs.nodejs-project == false && inputs.latex-project == false && inputs.docker-push == false
     runs-on: ${{ inputs.run-on }}
     container:
-      image: ghcr.io/actions/actions-runner:latest
+      image: ${{ inputs.container-image }}
     steps:
       - uses: actions/checkout@v4
         with:
