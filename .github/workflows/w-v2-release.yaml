@@ -2,6 +2,11 @@ name: Workflow - Comprehensive Gateway of Release
 on:
   workflow_call:
     inputs:
+      run-on:
+        required: false
+        type: string
+        default: "ubuntu-latest"
+        description: "The OS to run the release workflow on. Default to ubuntu-latest."
       python-project:
         required: false
         type: boolean
@@ -106,7 +111,9 @@ jobs:
   python-publish:
     name: Publish Python Project to PyPi
     if: inputs.python-project
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.run-on }}
+    container:
+      image: ghcr.io/actions/actions-runner:latest
     steps:
       - uses: actions/checkout@v4
         with:
@@ -124,7 +131,9 @@ jobs:
   js:
     name: Release Project to GitHub Rlease in NPM environment
     if: inputs.nodejs-project
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.run-on }}
+    container:
+      image: ghcr.io/actions/actions-runner:latest
     steps:
       - uses: actions/checkout@v4
         with:
@@ -138,7 +147,9 @@ jobs:
   latex:
     name: Release Project to GitHub Rlease for LaTex Documents
     if: inputs.latex-project
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.run-on }}
+    container:
+      image: ghcr.io/actions/actions-runner:latest
     steps:
       - uses: actions/checkout@v4
         with:
@@ -152,7 +163,9 @@ jobs:
   docker-push:
     name: Build and Push Docker Image
     if: inputs.docker-push
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.run-on }}
+    container:
+      image: ghcr.io/actions/actions-runner:latest
     permissions:
       contents: read
       packages: write
@@ -174,7 +187,9 @@ jobs:
   basic-github-release:
     name: Basic Release Process
     if: inputs.python-project == false && inputs.nodejs-project == false && inputs.latex-project == false && inputs.docker-push == false
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.run-on }}
+    container:
+      image: ghcr.io/actions/actions-runner:latest
     steps:
       - uses: actions/checkout@v4
         with:
