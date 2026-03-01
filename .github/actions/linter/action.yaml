@@ -58,16 +58,6 @@ runs:
         kubernetes-mode: ${{ inputs.kubernetes-mode }}
         onepass-token: ${{ inputs.onepass-token }}
 
-    - name: Run Super-Linter
-      run: /action/lib/linter.sh
-      if: ${{ inputs.kubernetes-mode == 'true' }}
-      env:
-        GITHUB_TOKEN: ${{ steps.get-token.outputs.token }}
-        VALIDATE_JAVASCRIPT_ES: true
-        VALIDATE_JAVASCRIPT_STANDARD: true
-        FILTER_REGEX_EXCLUDE: "(^.github/.*)"
-      shell: sh
-
     - name: Regular linter
       uses: super-linter/super-linter/slim@v8.5.0
       if: ${{ inputs.kubernetes-mode == 'false' }}
