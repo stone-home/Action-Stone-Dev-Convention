@@ -7,11 +7,6 @@ on:
         type: string
         default: "ubuntu-latest"
         description: "The OS to run the release workflow on. Default to ubuntu-latest."
-      container-image:
-        required: false
-        type: string
-        default: "ghcr.io/actions/actions-runner:latest"
-        description: "The container image to run the release steps. Default to ghcr.io/actions/actions-runner:latest."
       python-project:
         required: false
         type: boolean
@@ -117,8 +112,6 @@ jobs:
     name: Publish Python Project to PyPi
     if: inputs.python-project
     runs-on: ${{ inputs.run-on }}
-    container:
-      image: ${{ inputs.container-image }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -137,8 +130,6 @@ jobs:
     name: Release Project to GitHub Rlease in NPM environment
     if: inputs.nodejs-project
     runs-on: ${{ inputs.run-on }}
-    container:
-      image: ${{ inputs.container-image }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -153,8 +144,6 @@ jobs:
     name: Release Project to GitHub Rlease for LaTex Documents
     if: inputs.latex-project
     runs-on: ${{ inputs.run-on }}
-    container:
-      image: ${{ inputs.container-image }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -169,8 +158,6 @@ jobs:
     name: Build and Push Docker Image
     if: inputs.docker-push
     runs-on: ${{ inputs.run-on }}
-    container:
-      image: ${{ inputs.container-image }}
     permissions:
       contents: read
       packages: write
@@ -193,8 +180,6 @@ jobs:
     name: Basic Release Process
     if: inputs.python-project == false && inputs.nodejs-project == false && inputs.latex-project == false && inputs.docker-push == false
     runs-on: ${{ inputs.run-on }}
-    container:
-      image: ${{ inputs.container-image }}
     steps:
       - uses: actions/checkout@v4
         with:
