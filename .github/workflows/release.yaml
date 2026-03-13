@@ -38,7 +38,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 24
       - name: Configure 1Password Service Account
         uses: 1password/load-secrets-action/configure@v2
         with:

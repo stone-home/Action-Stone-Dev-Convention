@@ -4,7 +4,7 @@ inputs:
   node-version:
     description: "NodeJS version"
     required: false
-    default: "22"
+    default: "24"
   onepass-token:
     description: "OnePassword Token"
     required: true
