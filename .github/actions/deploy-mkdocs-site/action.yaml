@@ -29,6 +29,10 @@ runs:
         python-version: ${{ inputs.python-version }}
         poetry-version: ${{ inputs.poetry-version }}
 
+    - name: Install dependencies
+      shell: bash
+      run: poetry install --with test
+
     - name: Build Site
       shell: bash
       run: poetry run mkdocs build
