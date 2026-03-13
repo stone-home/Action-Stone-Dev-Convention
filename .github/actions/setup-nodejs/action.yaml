@@ -5,6 +5,10 @@ inputs:
     description: "NodeJS version"
     required: false
     default: "22"
+  install-dependencies:
+    description: "Whether to install dependencies using npm ci"
+    required: false
+    default: "true"
 
 runs:
   using: "composite"
@@ -14,5 +18,6 @@ runs:
         node-version: ${{ inputs.node-version }}
 
     - name: Install dependencies
+      if: ${{ inputs.install-dependencies == 'true' }}
       shell: bash
       run: npm ci
