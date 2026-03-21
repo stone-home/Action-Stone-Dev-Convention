@@ -8,7 +8,7 @@ inputs:
     description: "To enable javascript-relevant linter, default 'false'"
     required: false
     default: "false"
-  latext:
+  latex:
     description: "To enable LaTex Project linter, default 'false'"
     required: false
     default: "false"
@@ -30,12 +30,13 @@ inputs:
 
 # ===========================================================================
 # Required Permission
-#permissions:
+# permissions:
 #  contents: read
 #  packages: read
-#  # To report GitHub Actions status checks
+# To report GitHub Actions status checks
 #  statuses: write
 # ===========================================================================
+# Use "ghcr.io/super-linter/super-linter:v8.5.0" when kubernetes-mode is true"
 
 runs:
   using: "composite"
@@ -58,9 +59,9 @@ runs:
         kubernetes-mode: ${{ inputs.kubernetes-mode }}
         onepass-token: ${{ inputs.onepass-token }}
 
-    - name: Regular linter
+    - name: Regular linter (Docker action)
       uses: super-linter/super-linter/slim@v8.5.0
-      if: ${{ inputs.kubernetes-mode == 'false' }}
+      if: ${{ inputs.kubernetes-mode != 'true' }}
       env:
         # To report GitHub Actions status checks
         GITHUB_TOKEN: ${{ steps.get-token.outputs.token }}
@@ -74,34 +75,85 @@ runs:
         VALIDATE_GIT_MERGE_CONFLICT_MARKERS: true
         VALIDATE_ALL_CODEBASE: false
         FILTER_REGEX_EXCLUDE: ${{ inputs.exclude }}
+    - name: Regular linter (linter.sh)
+      if: ${{ inputs.kubernetes-mode == 'true' }}
+      env:
+        # To report GitHub Actions status checks
+        GITHUB_TOKEN: ${{ steps.get-token.outputs.token }}
+        VALIDATE_YAML: true
+        VALIDATE_JSON: true
+        VALIDATE_JSON_PRETTIER: true
+        VALIDATE_GITLEAKS: true
+        VALIDATE_ENV: true
+        VALIDATE_DOCKERFILE_HADOLINT: true
+        VALIDATE_GIT_COMMITLINT: true
+        VALIDATE_GIT_MERGE_CONFLICT_MARKERS: true
+        VALIDATE_ALL_CODEBASE: false
+        FILTER_REGEX_EXCLUDE: ${{ inputs.exclude }}
+      shell: bash
+      run: /action/lib/linter.sh
 
-    - name: Python Linter
-      if: ${{ inputs.python == 'true' }}
+    # ---------- Python ----------
+    - name: Python Linter (Docker action)
+      if: ${{ inputs.kubernetes-mode != 'true' && inputs.python == 'true' }}
       uses: super-linter/super-linter/slim@v8.5.0
       env:
-        GITHUB_TOKEN: ${{ steps.get-token.outputs.token }}
+        GITHUB_TOKEN: ${{ inputs.github-token-override != '' && inputs.github-token-override || steps.get-token.outputs.token }}
         VALIDATE_PYTHON_BLACK: true
         VALIDATE_JUPYTER_NBQA_BLACK: true
         VALIDATE_ALL_CODEBASE: false
         FILTER_REGEX_EXCLUDE: ${{ inputs.exclude }}
+    - name: Python Linter (linter.sh)
+      if: ${{ inputs.kubernetes-mode == 'true' && inputs.python == 'true' }}
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token-override != '' && inputs.github-token-override || steps.get-token.outputs.token }}
+        VALIDATE_PYTHON_BLACK: true
+        VALIDATE_JUPYTER_NBQA_BLACK: true
+        VALIDATE_ALL_CODEBASE: false
+        FILTER_REGEX_EXCLUDE: ${{ inputs.exclude }}
+      run: /action/lib/linter.sh
 
-    - name: JavaScript Linting
-      if: ${{ inputs.javascript == 'true' }}
+    # ---------- JavaScript / TypeScript ----------
+    - name: JavaScript Linting (Docker action)
+      if: ${{ inputs.kubernetes-mode != 'true' && inputs.javascript == 'true' }}
       uses: super-linter/super-linter/slim@v8.5.0
       env:
-        GITHUB_TOKEN: ${{ steps.get-token.outputs.token }}
+        GITHUB_TOKEN: ${{ inputs.github-token-override != '' && inputs.github-token-override || steps.get-token.outputs.token }}
         VALIDATE_JAVASCRIPT_ES: true
         VALIDATE_JAVASCRIPT_PRETTIER: true
         VALIDATE_TYPESCRIPT_ES: true
         VALIDATE_TYPESCRIPT_PRETTIER: true
         VALIDATE_ALL_CODEBASE: false
         FILTER_REGEX_EXCLUDE: ${{ inputs.exclude }}
+    - name: JavaScript Linting (linter.sh)
+      if: ${{ inputs.kubernetes-mode == 'true' && inputs.javascript == 'true' }}
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token-override != '' && inputs.github-token-override || steps.get-token.outputs.token }}
+        VALIDATE_JAVASCRIPT_ES: true
+        VALIDATE_JAVASCRIPT_PRETTIER: true
+        VALIDATE_TYPESCRIPT_ES: true
+        VALIDATE_TYPESCRIPT_PRETTIER: true
+        VALIDATE_ALL_CODEBASE: false
+        FILTER_REGEX_EXCLUDE: ${{ inputs.exclude }}
+      run: /action/lib/linter.sh
 
-    - name: LaTex Linting
-      if: ${{ inputs.latext == 'true' }}
+    # ---------- LaTeX ----------
+    - name: LaTeX Linting (Docker action)
+      if: ${{ inputs.kubernetes-mode != 'true' && inputs.latex == 'true' }}
       uses: super-linter/super-linter/slim@v8.5.0
       env:
-        GITHUB_TOKEN: ${{ steps.get-token.outputs.token }}
+        GITHUB_TOKEN: ${{ inputs.github-token-override != '' && inputs.github-token-override || steps.get-token.outputs.token }}
         VALIDATE_LATEX: true
         VALIDATE_ALL_CODEBASE: false
         FILTER_REGEX_EXCLUDE: ${{ inputs.exclude }}
+    - name: LaTeX Linting (linter.sh)
+      if: ${{ inputs.kubernetes-mode == 'true' && inputs.latex == 'true' }}
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token-override != '' && inputs.github-token-override || steps.get-token.outputs.token }}
+        VALIDATE_LATEX: true
+        VALIDATE_ALL_CODEBASE: false
+        FILTER_REGEX_EXCLUDE: ${{ inputs.exclude }}
+      run: /action/lib/linter.sh

@@ -32,8 +32,15 @@ runs:
 
     - name: Install poetry
       uses: abatilo/actions-poetry@v3
+      if: ${{ inputs.kubernetes-mode != 'true' }}
       with:
         poetry-version: ${{ inputs.poetry-version }}
+
+    - name: Install Poetry
+      if: ${{ inputs.kubernetes-mode == 'true' }}
+      shell: bash
+      run: |
+        pipx install "poetry==${{ inputs.poetry-version }}"
 
     - name: Setup Poetry config
       shell: bash
