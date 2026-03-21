@@ -56,29 +56,6 @@ runs:
         echo "unzip not found after installation." >&2
         exit 1
         fi
-
-    - name: Ensure op CLI
-      shell: bash
-      if: ${{ inputs.kubernetes-mode == 'true' }}
-      env:
-        OP_VERSION: ${{ inputs.op-version }}
-      run: |
-        set -euo pipefail
-        if command -v op >/dev/null 2>&1; then
-          op --version
-          exit 0
-        fi
-        arch="$(uname -m)"
-        case "$arch" in x86_64) arch=amd64;; aarch64) arch=arm64;; *)
-          echo "unsupported arch: $arch" >&2
-          exit 1
-        ;; esac
-        curl -fsSL -o /tmp/op.zip \
-          "https://cache.agilebits.com/dist/1P/op2/pkg/v${OP_VERSION}/op_linux_${arch}_v${OP_VERSION}.zip"
-        unzip -o /tmp/op.zip -d /usr/local/bin op
-        chmod +x /usr/local/bin/op
-        rm -f /tmp/op.zip
-        op --version
     - name: Install 1Password CLI
       if: ${{ inputs.kubernetes-mode == 'true' }}
       uses: 1password/install-cli-action@v2
