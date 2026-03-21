@@ -102,7 +102,7 @@ runs:
         kubernetes-mode: ${{ inputs.kubernetes-mode }}
 
     - name: Checkout Dify repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       with:
         repository: stone-home/Python-RAG-Knowledge
         token: ${{ steps.get-home-stone-token.outputs.token }}

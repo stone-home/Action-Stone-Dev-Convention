@@ -113,7 +113,7 @@ jobs:
     if: inputs.python-project
     runs-on: ${{ inputs.run-on }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - uses: stone-home/Action-Stone-DevOps/.github/actions/publish-python@trunk
@@ -131,7 +131,7 @@ jobs:
     if: inputs.nodejs-project
     runs-on: ${{ inputs.run-on }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - uses: stone-home/Action-Stone-DevOps/.github/actions/publish-npm@trunk
@@ -145,7 +145,7 @@ jobs:
     if: inputs.latex-project
     runs-on: ${{ inputs.run-on }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - uses: stone-home/Action-Stone-DevOps/.github/actions/publish-latex@trunk
@@ -162,7 +162,7 @@ jobs:
       contents: read
       packages: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - uses: stone-home/Action-Stone-DevOps/.github/actions/docker-push@trunk
@@ -181,7 +181,7 @@ jobs:
     if: inputs.python-project == false && inputs.nodejs-project == false && inputs.latex-project == false && inputs.docker-push == false
     runs-on: ${{ inputs.run-on }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - uses: stone-home/Action-Stone-DevOps/.github/actions/publish-basic@trunk

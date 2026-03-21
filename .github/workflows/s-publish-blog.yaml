@@ -6,10 +6,13 @@ on:
 
 jobs:
   blog-creating:
-    runs-on: ubuntu-latest
+    # runs-on: ubuntu-latest
+    runs-on: arc-runner-large
+    container:
+      image: ubuntu:24.04
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - uses: ./.github/actions/create-blog-in-hugo
@@ -17,6 +20,7 @@ jobs:
           release-subject: ${{ github.event.release.name }} # Subject of the release
           release-body: ${{ github.event.release.body }} # Body of the release
           release-url: ${{ github.event.release.html_url }} # URL of the release
-          python-version: "3.12" # Python version to use
+          python-version: "3.12.9" # Python version to use
           project-name: "DevOps Automation"
           onepass-token: ${{ secrets.OP_ACCOUNT_TOKEN }} # 1Password service account token
+          kubernetes-mode: "true"
