@@ -18,6 +18,7 @@ runs:
       with:
         python-version: ${{ inputs.python-version }}
         poetry-version: ${{ inputs.poetry-version }}
+        kubernetes-mode: ${{ inputs.kubernetes-mode }}
 
     - name: Install dependencies
       shell: bash
