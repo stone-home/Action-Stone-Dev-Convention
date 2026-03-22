@@ -47,7 +47,9 @@ inputs:
 runs:
   using: composite
   steps:
+    # The fnctl64 missing issue occurs in kubernetes mode only (at least in my case)
     - name: Native Git Checkout (avoids fnctl64 missing issue in post checkout steps)
+      if: ${{ inputs.kubernetes-mode == 'true' }}
       env:
         GITHUB_TOKEN: ${{ github.token }}
         REPO_URL: github.com/${{ github.repository }}.git
