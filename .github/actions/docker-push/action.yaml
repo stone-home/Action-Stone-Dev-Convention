@@ -37,6 +37,10 @@ inputs:
     description: "Comma-separated tag suffixes (e.g. latest,v1.0.0)"
     required: false
     default: "latest"
+  git-clone:
+    description: "Useful in kubernetes-mode to avoid fnctl64 missing issue in post-checkout steps."
+    required: false
+    default: "true"
 
 # ===========================================================================
 # Required Permission
@@ -49,7 +53,7 @@ runs:
   steps:
     # The fnctl64 missing issue occurs in kubernetes mode only (at least in my case)
     - name: Native Git Checkout (avoids fnctl64 missing issue in post checkout steps)
-      if: ${{ inputs.kubernetes-mode == 'true' }}
+      if: inputs.kubernetes-mode == 'true' && inputs.git-clone == 'true'
       env:
         GITHUB_TOKEN: ${{ github.token }}
         REPO_URL: github.com/${{ github.repository }}.git
