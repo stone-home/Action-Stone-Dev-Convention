@@ -1,8 +1,9 @@
 name: Docker Build and Push
-description: "Build a Docker image and push it to GHCR or Docker Hub"
+description: "Build and push with Docker (hosted) or Kaniko (ARC kubernetes-mode, no Docker socket)"
+
 inputs:
   registry:
-    description: "Target registry: 'ghcr' (GitHub Container Registry) or 'dockerhub'"
+    description: "Target registry: 'ghcr' or 'dockerhub'"
     required: false
     default: "ghcr"
   registry-username:
@@ -10,30 +11,30 @@ inputs:
     required: false
     default: ""
   registry-password-path:
-    description: "1Password secret path for Container Registry token"
+    description: "1Password secret path for registry token"
     required: false
     default: "op://DevOps/Docker PAT - Git Action/credential"
   onepass-token:
-    description: "OnePassword service account token for loading secrets"
+    description: "OnePassword service account token"
     required: true
   kubernetes-mode:
-    description: "Enable kubernetes mode (run on host with ARC kubernetes mode)"
+    description: "true = Kaniko in container (no Docker). Job must use gcr.io/kaniko-project/executor:*-debug"
     required: false
     default: "false"
   image-name:
-    description: "Full image name (e.g. ghcr.io/owner/repo or username/repo for Docker Hub). Defaults by registry"
+    description: "Full image ref without tag (e.g. ghcr.io/owner/repo)."
     required: false
     default: ""
   dockerfile:
-    description: "Path to the Dockerfile"
+    description: "Dockerfile path relative to repo root"
     required: false
     default: "Dockerfile"
   context:
-    description: "Build context path"
+    description: "Build context path relative to repo root"
     required: false
     default: "."
   tags:
-    description: "Comma-separated list of tags to push (e.g. latest,v1.0.0)"
+    description: "Comma-separated tag suffixes (e.g. latest,v1.0.0)"
     required: false
     default: "latest"
 
@@ -46,14 +47,35 @@ inputs:
 runs:
   using: composite
   steps:
-    # Resolve image name and build full tag list (image:tag1,image:tag2,...)
+    - name: Native Git Checkout (avoids fnctl64 missing issue in post checkout steps)
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+        REPO_URL: github.com/${{ github.repository }}.git
+        BRANCH: ${{ github.ref_name }}
+      shell: bash
+      run: |
+        # Trust the default GitHub Actions workspace directory
+        git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+        # Clone the specific branch using the automatic token
+        # github.ref_name supports both workflow_dispatch and push events
+        git clone --single-branch --branch "$BRANCH" "https://x-access-token:${GITHUB_TOKEN}@${REPO_URL}" .
+
+        # Optional validation
+        git log -1 --format="Checked out commit: %H"
     - name: Set image name and tags
       id: image
       shell: bash
       run: |
+        set -euo pipefail
         name="${{ inputs.image-name }}"
+        if [ -z "$name" ] && [ "${{ inputs.registry }}" = "ghcr" ]; then
+          name="ghcr.io/${{ github.repository }}"
+        fi
+        if [ "${{ inputs.registry }}" = "ghcr" ]; then
+          name=$(echo "$name" | tr '[:upper:]' '[:lower:]')
+        fi
         echo "name=$name" >> "$GITHUB_OUTPUT"
-        # Build comma-separated full tags from input tag suffixes
         tags_in="${{ inputs.tags }}"
         tags_full=""
         IFS=',' read -ra TARR <<< "$tags_in"
@@ -81,24 +103,84 @@ runs:
         onepass-token: ${{ inputs.onepass-token }}
 
     - name: Log in to GitHub Container Registry
-      if: inputs.registry == 'ghcr'
+      if: inputs.registry == 'ghcr' && inputs.kubernetes-mode != 'true'
       uses: docker/login-action@v3
       with:
         registry: ghcr.io
-        username: ${{ inputs.registry-username}}
+        username: ${{ inputs.registry-username }}
         password: ${{ steps.get-registry-token.outputs.token }}
 
     - name: Log in to Docker Hub
-      if: inputs.registry == 'dockerhub'
+      if: inputs.registry == 'dockerhub' && inputs.kubernetes-mode != 'true'
       uses: docker/login-action@v3
       with:
         username: ${{ inputs.registry-username }}
         password: ${{ steps.get-registry-token.outputs.token }}
 
     - name: Build and push Docker image
+      if: inputs.kubernetes-mode != 'true'
       uses: docker/build-push-action@v6
       with:
         context: ${{ inputs.context }}
         file: ${{ inputs.dockerfile }}
         push: true
         tags: ${{ steps.image.outputs.tags }}
+
+    - name: Build and push (Kaniko, no Docker daemon)
+      if: inputs.kubernetes-mode == 'true'
+      shell: sh
+      env:
+        REGISTRY: ${{ inputs.registry }}
+        REG_USER: ${{ inputs.registry-username }}
+        REG_PASS: ${{ steps.get-registry-token.outputs.token }}
+        TAGS_FULL: ${{ steps.image.outputs.tags }}
+        BUILD_CONTEXT: ${{ inputs.context }}
+        DOCKERFILE_PATH: ${{ inputs.dockerfile }}
+      run: |
+        set -eu
+        if [ ! -x /kaniko/executor ]; then
+          echo "::error::kubernetes-mode needs Kaniko at /kaniko/executor. Plain ubuntu:24.04 has no Docker and no Kaniko — see Dockerfile.arc-ubuntu-kaniko.example in this folder."
+          exit 1
+        fi
+
+        ws="${GITHUB_WORKSPACE}"
+        ctx=$(cd "$ws" && realpath "${BUILD_CONTEXT:-.}")
+        df=$(cd "$ws" && realpath "$DOCKERFILE_PATH")
+        case "$df" in
+          "$ctx"/*) rel="${df#"$ctx"/}";;
+          *)
+            echo "::error::Dockerfile must be inside the build context ($BUILD_CONTEXT)."
+            exit 1
+            ;;
+        esac
+
+        export DOCKER_CONFIG="/tmp/kaniko-docker-config"
+        rm -rf "$DOCKER_CONFIG"
+        mkdir -p "$DOCKER_CONFIG"
+        if [ "$REGISTRY" = "ghcr" ]; then
+          key="ghcr.io"
+        else
+          key="https://index.docker.io/v1/"
+        fi
+        if [ -z "${REG_USER:-}" ] || [ -z "${REG_PASS:-}" ]; then
+          echo "::error::registry-username and registry token are required for Kaniko push."
+          exit 1
+        fi
+        b64=$(printf '%s:%s' "$REG_USER" "$REG_PASS" | base64 -w0 2>/dev/null || printf '%s:%s' "$REG_USER" "$REG_PASS" | base64 | tr -d '\n')
+        printf '%s\n' "{\"auths\":{\"${key}\":{\"auth\":\"${b64}\"}}}" > "$DOCKER_CONFIG/config.json"
+
+        # Kaniko v1.24+: no --push (push is default when --destination is set; use --no-push to disable).
+        # Save IFS before the loop; do not put '\' after --dockerfile if the next line is an assignment
+        # (backslash would continue the line and merge oifs= into the set -- command).
+        _ifs_save=$IFS
+        set -- \
+          --context="dir://${ctx}" \
+          --dockerfile="$rel"
+        IFS=,
+        for d in $TAGS_FULL; do
+          d=$(echo "$d" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+          [ -z "$d" ] && continue
+          set -- "$@" --destination="$d"
+        done
+        IFS=$_ifs_save
+        exec /kaniko/executor "$@"

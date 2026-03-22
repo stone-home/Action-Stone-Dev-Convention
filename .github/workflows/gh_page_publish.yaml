@@ -47,7 +47,7 @@ jobs:
       - name: Update Hugo Modules
         run: hugo mod tidy
       - name: Setup Node for Hugo
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 24
       - name: Install Node Modules for Hugo
