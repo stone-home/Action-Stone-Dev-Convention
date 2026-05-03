@@ -93,7 +93,7 @@ runs:
     # 10. Publish the package
     - name: Get PyPi Token
       id: get-pypi-token
-      if: ${{ inputs.pypi_enable == 'true' }}
+      if: ${{ inputs.pypi-enable == 'true' }}
       uses: stone-home/Action-Stone-DevOps/.github/actions/load-github-token@trunk
       with:
         secret-path: ${{ inputs.pypi-token-path }}
@@ -101,6 +101,6 @@ runs:
         onepass-token: ${{ inputs.onepass-token }}
 
     - name: Publish package to PyPI
-      if: ${{ inputs.pypi_enable == 'true' }}
+      if: ${{ inputs.pypi-enable == 'true' }}
       shell: bash
       run: poetry publish -u __token__ -p ${{ steps.get-pypi-token.outputs.token }}
