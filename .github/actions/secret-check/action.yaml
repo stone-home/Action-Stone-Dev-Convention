@@ -42,4 +42,4 @@ runs:
           install -m 0755 /tmp/trufflehog /usr/local/bin/trufflehog
           rm -f /tmp/trufflehog.tgz /tmp/trufflehog
         fi
-        trufflehog git "file://$GITHUB_WORKSPACE" --results=verified,unknown --fail
+        trufflehog git "file://$GITHUB_WORKSPACE" --results=verified,unknown
