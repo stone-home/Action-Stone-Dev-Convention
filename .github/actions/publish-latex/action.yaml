@@ -60,6 +60,13 @@ runs:
         onepass-token: ${{ inputs.onepass-token }}
 
     # 4. Release (Semantic Release will likely run latex build plugins here)
+    - name: Fetch DevOps scripts
+      uses: actions/checkout@v4
+      with:
+        repository: stone-home/Action-Stone-DevOps
+        ref: trunk
+        path: .devops
+
     - name: Semantic Release
       shell: bash
       run: npx semantic-release@25.0.2
