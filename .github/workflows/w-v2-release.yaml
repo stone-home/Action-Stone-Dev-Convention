@@ -2,6 +2,11 @@ name: Workflow - Comprehensive Gateway of Release
 on:
   workflow_call:
     inputs:
+      default-branch:
+        required: false
+        type: string
+        default: "trunk"
+        description: "Set the default branch you want to checkout with"
       run-on:
         required: false
         type: string
@@ -115,6 +120,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
+          ref: ${{ inputs.default-branch }}
           fetch-depth: 0
       - uses: stone-home/Action-Stone-DevOps/.github/actions/publish-python@trunk
         with:
@@ -133,6 +139,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
+          ref: ${{ inputs.default-branch }}
           fetch-depth: 0
       - uses: stone-home/Action-Stone-DevOps/.github/actions/publish-npm@trunk
         with:
@@ -147,6 +154,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
+          ref: ${{ inputs.default-branch }}
           fetch-depth: 0
       - uses: stone-home/Action-Stone-DevOps/.github/actions/publish-latex@trunk
         with:
@@ -164,6 +172,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
+          ref: ${{ inputs.default-branch }}
           fetch-depth: 0
       - uses: stone-home/Action-Stone-DevOps/.github/actions/docker-push@trunk
         with:
@@ -183,6 +192,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
+          ref: ${{ inputs.default-branch }}
           fetch-depth: 0
       - uses: stone-home/Action-Stone-DevOps/.github/actions/publish-basic@trunk
         with:
